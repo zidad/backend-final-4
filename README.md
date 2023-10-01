@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a e-commerce web application built using Node.js and the Express.js framework. An e-commerce website is an online platform for buying and selling products and services, providing a convenient and accessible to users worldwide specialized in Accessories.
+This is an e-commerce web application built using Node.js and the Express.js framework. An e-commerce website is an online platform for buying and selling products and services, providing convenient and accessible to users worldwide specialized in Accessories.
 
 ## Table of Contents
 
@@ -53,11 +53,6 @@ express-app/
 ├── validators/              # Validators for the application
 │   ├── index.js
 │   ├── userValidation.js
-|
-├── views/                   # HTML templates for the web pages
-│   ├── layout.ejs
-│   ├── index.ejs
-│   ├── user.ejs
 │
 ├── utils/                   # Helper functions for the application
 │   ├── index.js
@@ -90,19 +85,13 @@ The application will be accessible at `http://localhost:3000` in your web browse
 
 This web application includes the following features:
 
-- **User Authentication**: Users can sign up and log in to their accounts.
-- **User Profiles**: Users have their own profiles with customizable information.
-- **Protected Routes**: Certain routes are protected and require authentication to access.
+
 
 ## Routes
 
 The application includes the following routes:
 
-- **Home Page**: `/` - Displays the home page with general information.
-- **User Profile**: `/profile` - Displays the user's profile.
-- **Sign Up**: `/signup` - Allows users to sign up for an account.
-- **Log In**: `/login` - Allows users to log in to their accounts.
-- **Log Out**: `/logout` - Logs the user out and redirects to the home page.
+
 
 ## Contributing
 
