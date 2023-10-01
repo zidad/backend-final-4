@@ -20,47 +20,31 @@ express-app/
 │
 ├── app.js                   # Main Express application file
 ├── package.json             # Node.js package configuration
-├── package-lock.json        # Node.js package-lock configuration
 ├── node_modules/            # Node.js project dependencies (not committed to version control)
-├── public/                  # Static assets like CSS, JavaScript, and images
-│   ├── css/
-│   │   ├── style.css
-│   ├── js/
-│   │   ├── script.js
-│   ├── img/
-│   │   ├── logo.png
-│
-├── config/                  # Configurations for the application
-│   ├── index.js
-│   ├── db.config.js
 |
-├── models/                  # Models for the application
-│   ├── index.js
-│   ├── user.js
+├── config/                  # Configurations for the application
+│   ├── config.js
 |
 ├── controllers/             # Route Controllers for the application
 │   ├── index.js
-│   ├── userController.js
 |
 ├── middlewares/             # Route middlewares for the application
 │   ├── index.js
-│   ├── userController.js
+|
+├── models/                  # Models for the application
+│   ├── connection.js
 |
 ├── routes/                  # Route handlers for the application
 │   ├── index.js
-│   ├── users.js
 │
 ├── validators/              # Validators for the application
 │   ├── index.js
-│   ├── userValidation.js
 │
 ├── utils/                   # Helper functions for the application
 │   ├── index.js
-│   ├── error-handler.js
 |
 ├── services/                # Services for the application
 │   ├── index.js
-│   ├── userServices.js
 │
 ├── README.md                # Project documentation
 │
