@@ -87,7 +87,7 @@ module.exports = User
 
 // To-Do
 // Add role field
-// Add image field
+// Add imageUrl field
 
 
 // mobile: {

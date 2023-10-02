@@ -50,7 +50,7 @@ const updateUser = asyncWrapper(async (req, res, next) => {
     }
 
     const updatedUser = await User.findByPk(id);
-    console.log('Updated users: ', updatedUser?.firstName);
+    console.log('Updated user: ', updatedUser?.firstName);
     res.status(200).json({ success: true, data: updatedUser });
 });
 
@@ -64,7 +64,7 @@ const deleteUser = asyncWrapper(async (req, res, next) => {
         return next(createCustomError(`No user with id: ${id} is found`, 404));
     }
 
-    console.log('Deleted User : ', deletedRowCount);
+    console.log('Deleted user : ', deletedRowCount);
     res.status(200).json({ success: true, msg: 'User deleted successfully' });
 });
 
