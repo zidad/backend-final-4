@@ -1,5 +1,5 @@
-const { CustomAPIError } = require("../utils/errors/custom-error");
-const errorHandler = (err, req, res, next) => {
+const { CustomAPIError } = require('../utils/errors/custom-error');
+const errorHandler = (err, req, res) => { // remove next
   if (err instanceof CustomAPIError) {
     return res.status(err.statusCode).json({ msg: err.message });
   }
@@ -7,7 +7,7 @@ const errorHandler = (err, req, res, next) => {
     .status(500)
     .json({
       success: false,
-      msg: err.message || "Something Went Wrong",
+      msg: err.message || 'Something Went Wrong',
       error: err,
     });
 };

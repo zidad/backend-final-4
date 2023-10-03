@@ -1,11 +1,10 @@
 // imports
-const DataTypes = require("sequelize");
-const sequelize = require("../utils/dataBaseConnection");
-const Product = require("./productModel");
-const Cart = require("./cartModel");
+const DataTypes = require('sequelize');
+const sequelize = require('../utils/dataBaseConnection');
+const Product = require('./productModel');
+const Cart = require('./cartModel');
 
-const CartItem = sequelize.define(
-  "cart-item",
+const CartItem = sequelize.define('cart-item',
   {
     id: {
       type: DataTypes.INTEGER(15),
@@ -18,7 +17,7 @@ const CartItem = sequelize.define(
       allowNull: false,
       validate: {
         isDecimal: {
-          msg: "Expected decimal number",
+          msg: 'Expected decimal number',
         },
       },
     },
@@ -27,11 +26,11 @@ const CartItem = sequelize.define(
       allowNull: false,
       validate: {
         isInt: {
-          msg: "Rating count must be an integer",
+          msg: 'Rating count must be an integer',
         },
         min: {
           args: [0],
-          msg: "Rating count must be greater than or equal to 0",
+          msg: 'Rating count must be greater than or equal to 0',
         },
       },
     },
@@ -40,8 +39,8 @@ const CartItem = sequelize.define(
       allowNull: false,
       references: {
         model: Product,
-        key: "id",
-        onDelete: "CASCADE",
+        key: 'id',
+        onDelete: 'CASCADE',
       },
     },
     cartId: {
@@ -49,8 +48,8 @@ const CartItem = sequelize.define(
       allowNull: false,
       references: {
         model: Cart,
-        key: "id",
-        onDelete: "CASCADE",
+        key: 'id',
+        onDelete: 'CASCADE',
       },
     },
   },
@@ -61,9 +60,9 @@ const CartItem = sequelize.define(
 );
 
 //Associations
-CartItem.belongsTo(Cart, { foreignKeys: "cartId" });
-Cart.hasMany(CartItem, { foreignKeys: "cartId" });
-Product.hasMany(CartItem, { foreignKeys: "cartId" });
+CartItem.belongsTo(Cart, { foreignKeys: 'cartId' });
+Cart.hasMany(CartItem, { foreignKeys: 'cartId' });
+Product.hasMany(CartItem, { foreignKeys: 'cartId' });
 CartItem.belongsTo(Product);
 
 //exports

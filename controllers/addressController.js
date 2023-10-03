@@ -1,6 +1,6 @@
-const { Address } = require("../models");
-const { asyncWrapper } = require("../middleware");
-const { createCustomError } = require("../utils/errors/custom-error");
+const { Address } = require('../models');
+const { asyncWrapper } = require('../middleware');
+const { createCustomError } = require('../utils/errors/custom-error');
 
 // Create a new address in the database
 const createAddress = asyncWrapper(async (req, res) => {
@@ -12,10 +12,10 @@ const createAddress = asyncWrapper(async (req, res) => {
     city,
     userId,
   });
-  console.log("Created address: ", address);
+  console.log('Created address: ', address);
   res.status(201).json({
     success: true,
-    message: `Address created Successfully`,
+    message: 'Address created Successfully',
     data: address,
   });
 });
@@ -23,7 +23,7 @@ const createAddress = asyncWrapper(async (req, res) => {
 // Get all addresses from the database
 const getAddresses = asyncWrapper(async (req, res) => {
   const addresses = await Address.findAll();
-  console.log("Addresses Are Fetched");
+  console.log('Addresses Are Fetched');
   res.status(200).json({
     success: true,
     message: `Addresses Fetched Successfully`,
@@ -36,7 +36,7 @@ const getAddress = asyncWrapper(async (req, res, next) => {
   const id = Number(req.params.id);
 
   const address = await Address.findByPk(id);
-  console.log("Address: ", address);
+  console.log('Address: ', address);
   if (address) {
     return res.status(200).json({
       success: true,
@@ -58,14 +58,14 @@ const updateAddress = asyncWrapper(async (req, res, next) => {
     { where: { id } }
   );
 
-  console.log("Updated Row Count: ", updatedRowCount);
+  console.log('Updated Row Count: ', updatedRowCount);
 
   if (updatedRowCount === 0) {
     return next(createCustomError(`No address with id: ${id} is found`, 404));
   }
 
   const updatedAddress = await Address.findByPk(id);
-  console.log("Updated address: ", updatedAddress);
+  console.log('Updated address: ', updatedAddress);
   res.status(200).json({
     success: true,
     message: `Address updated Successfully`,
@@ -83,10 +83,10 @@ const deleteAddress = asyncWrapper(async (req, res, next) => {
     return next(createCustomError(`No address with id: ${id} is found`, 404));
   }
 
-  console.log("Deleted address : ", deletedRowCount);
+  console.log('Deleted address : ', deletedRowCount);
   res.status(200).json({
     success: true,
-    message: "Address deleted successfully",
+    message: 'Address deleted successfully',
   });
 });
 
