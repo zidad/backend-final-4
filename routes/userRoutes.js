@@ -16,7 +16,7 @@ router.get('/:id', getUser);
 router.post('/', createUser);
 router.put('/:id', updateUser);
 router.delete('/:id', deleteUser);
-router.get('/addresses/:id', getUserAddresses)
+router.get('/addresses/:id', getUserAddresses);
 
 
 module.exports = router;

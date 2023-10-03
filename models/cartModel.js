@@ -1,11 +1,11 @@
 // imports
-const DataTypes = require("sequelize");
-const sequelize = require("../utils/dataBaseConnection");
-const User = require("./userModel");
+const DataTypes = require('sequelize');
+const sequelize = require('../utils/dataBaseConnection');
+const User = require('./userModel');
 
 // Cart Model
 const Cart = sequelize.define(
-  "cart",
+  'cart',
   {
     id: {
       type: DataTypes.INTEGER(15),
@@ -18,7 +18,7 @@ const Cart = sequelize.define(
       allowNull: false,
       validate: {
         isDecimal: {
-          msg: "Expected decimal number",
+          msg: 'Expected decimal number',
         },
       },
     },
@@ -27,8 +27,8 @@ const Cart = sequelize.define(
       allowNull: false,
       references: {
         model: User,
-        key: "id",
-        onDelete: "CASCADE",
+        key: 'id',
+        onDelete: 'CASCADE',
       },
     },
   },
@@ -39,7 +39,7 @@ const Cart = sequelize.define(
 );
 
 // Cart Associations
-User.hasOne(Cart, { foreignKey: "userId" });
+User.hasOne(Cart, { foreignKey: 'userId' });
 Cart.belongsTo(User);
 
 // exports

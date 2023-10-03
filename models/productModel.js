@@ -1,8 +1,7 @@
-const DataTypes = require("sequelize");
-const sequelize = require("../utils/dataBaseConnection");
+const DataTypes = require('sequelize');
+const sequelize = require('../utils/dataBaseConnection');
 
-const Product = sequelize.define(
-  "product",
+const Product = sequelize.define('product',
   {
     id: {
       type: DataTypes.INTEGER(15),
@@ -15,7 +14,7 @@ const Product = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "Title cannot be empty",
+          msg: 'Title cannot be empty',
         },
       },
     },
@@ -24,7 +23,7 @@ const Product = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "Description cannot be empty",
+          msg: 'Description cannot be empty',
         },
       },
     },
@@ -33,11 +32,11 @@ const Product = sequelize.define(
       allowNull: false,
       validate: {
         isDecimal: {
-          msg: "Price must be a decimal number",
+          msg: 'Price must be a decimal number',
         },
         min: {
           args: [0.01],
-          msg: "Price must be greater than 0",
+          msg: 'Price must be greater than 0',
         },
       },
     },
@@ -45,7 +44,7 @@ const Product = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
-        isInt: "Available in stock must be an Integer",
+        isInt: 'Available in stock must be an Integer',
       },
     },
     totalRating: {
@@ -53,11 +52,11 @@ const Product = sequelize.define(
       allowNull: false,
       validate: {
         isDecimal: {
-          msg: "Total rating must be a decimal number",
+          msg: 'Total rating must be a decimal number',
         },
         min: {
           args: [0],
-          msg: "Total rating must be greater than or equal to 0",
+          msg: 'Total rating must be greater than or equal to 0',
         },
       },
     },
@@ -66,11 +65,11 @@ const Product = sequelize.define(
       allowNull: false,
       validate: {
         isInt: {
-          msg: "Rating count must be an integer",
+          msg: 'Rating count must be an integer',
         },
         min: {
           args: [0],
-          msg: "Rating count must be greater than or equal to 0",
+          msg: 'Rating count must be greater than or equal to 0',
         },
       },
     },
