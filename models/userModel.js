@@ -1,5 +1,5 @@
 const DataTypes = require('sequelize')
-const sequelize = require('./connection')
+const sequelize = require('../utils/dataBaseConnection')
 const bcrypt = require('bcrypt')
 
 
