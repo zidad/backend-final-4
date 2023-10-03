@@ -84,10 +84,10 @@ const User = sequelize.define('user',{
 
 module.exports = User;
 
+
 // To-Do
 // Add role field
 // Add imageUrl field
-
 
 
 // mobile: {
