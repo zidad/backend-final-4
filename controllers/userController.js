@@ -6,7 +6,7 @@ const { createCustomError } = require("../utils/errors/custom-error");
 const createUser = asyncWrapper(async (req, res, next) => {
   const { firstName, lastName, email, mobile, dateOfBirth, password } =
     req.body;
-  const exists = await User.findOne({ where: { email } });
+  const exists = await User.findOne({ where: { email: email } });
   if (!exists) {
     const user = await User.create({
       firstName,
