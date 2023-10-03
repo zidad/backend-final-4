@@ -2,9 +2,8 @@ const DataTypes = require('sequelize');
 const sequelize = require('../utils/dataBaseConnection');
 const bcrypt = require('bcrypt');
 
-const User = sequelize.define(
-  "user",
-  {
+
+const User = sequelize.define('user',{
     id: {
       type: DataTypes.INTEGER(15),
       allowNull: false,
@@ -74,23 +73,22 @@ const User = sequelize.define(
     fullName: {
       type: DataTypes.VIRTUAL,
       get() {
-        return `${this.getDataValue("firstName")} ${this.getDataValue(
-          "lastName"
-        )}`;
+        return `${this.getDataValue('firstName')} ${this.getDataValue('lastName')}`;
       },
     },
-  },
-  {
+  }, {
     freezeTableName: true,
     timestamps: false,
-  }
-);
+  });
+
 
 module.exports = User;
 
 // To-Do
 // Add role field
 // Add imageUrl field
+
+
 
 // mobile: {
 //     type: DataTypes.STRING(20),
