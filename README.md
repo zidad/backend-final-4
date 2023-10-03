@@ -27,21 +27,35 @@ express-app/
 |
 ├── controllers/             # Route Controllers for the application
 │   ├── index.js
+|   ├── userController.js
+|   ├── addressController.js
+|   ├── productController.js
 |
 ├── middlewares/             # Route middlewares for the application
 │   ├── index.js
+│   ├── async.js
+│   ├── error-Handler.js
+│   ├── not-Found.js
 |
 ├── models/                  # Models for the application
 │   ├── connection.js
+│   ├── userModel.js
+│   ├── addressModel.js
+│   ├── paroductModel.js
 |
 ├── routes/                  # Route handlers for the application
 │   ├── index.js
+│   ├── userRoutes.js
+│   ├── addressRouts.js
+│   ├── productRoutes.js
 │
 ├── validators/              # Validators for the application
 │   ├── index.js
 │
 ├── utils/                   # Helper functions for the application
 │   ├── index.js
+│   ├── errors/              # Helper module/functions for handling errors across the application
+|   |   ├── custome-error.js
 |
 ├── services/                # Services for the application
 │   ├── index.js
@@ -63,18 +77,20 @@ To run this project locally, follow these steps:
 4. npm start
 ```
 
-The application will be accessible at `http://localhost:3000` in your web browser.
+The application will be accessible at `http://localhost:5000` in your web browser.
 
 ## Usage
 
 This web application includes the following features:
-
+* User Profiles: Users have their own profiles with customizable information.
+* Address Profiles: Address have their own profiles with customizable information.
+* Product Profiles: Product have their own profiles with customizable information.
 
 
 ## Routes
 
 The application includes the following routes:
-
+- **Home Page**: `/` - Displays the home page with general information.
 
 
 ## Contributing

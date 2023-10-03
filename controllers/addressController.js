@@ -1,6 +1,7 @@
 const Address = require('../models/addressModel')
 const asyncWrapper = require('../middleware/async');
-const { createCustomError } = require('../middleware/custome-error');
+const { createCustomError } = require("../utils/errors/custome-error")
+
 
 
 // Create a new address in the database

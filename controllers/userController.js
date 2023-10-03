@@ -1,21 +1,27 @@
 const User = require('../models/userModel')
 const asyncWrapper = require('../middleware/async');
-const { createCustomError } = require('../middleware/custome-error');
+const { createCustomError } = require("../utils/errors/custome-error")
 const Address = require('../models/addressModel')
 
 // Create a new user in the database
-const createUser = asyncWrapper(async (req, res) => {
+const createUser = asyncWrapper(async (req, res, next) => {
     const { firstName, lastName, email, mobile, dateOfBirth, password } = req.body;
-    const user = await User.create({ firstName, lastName, email, mobile, dateOfBirth, password });
-    console.log('Created user: ', user?.firstName);
-    res.status(201).json({ success: true, data: user });
+    const exists = await User.findOne({ where: { email } })
+    if (!exists) {
+        const user = await User.create({ firstName, lastName, email, mobile, dateOfBirth, password });
+        // To-DO small letters
+        console.log('Created user: ', user?.firstName);
+        return res.status(201).json({ success: true, data: user });
+    } else {
+        return next(createCustomError(`email ${email} is already exist`, 400));
+    }
 });
 
 // Get all users from the database
 const getUsers = asyncWrapper(async (req, res) => {
     const users = await User.findAll();
     console.log("Users Are Fetched");
-    res.status(200).json({ success: true, data: users });
+    res.status(200).json({ success: true, data: users })
 });
 
 // Get a single user by ID from the database

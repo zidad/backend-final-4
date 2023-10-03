@@ -1,6 +1,6 @@
 const Product = require('../models/productModel')
 const asyncWrapper = require('../middleware/async');
-const { createCustomError } = require('../middleware/custome-error');
+const { createCustomError } = require("../utils/errors/custome-error")
 const { Op } = require('sequelize');
 
 
