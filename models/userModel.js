@@ -72,7 +72,7 @@ const User = sequelize.define('user', {
       this.setDataValue('password', hashedPassword);
     },
   },
-  imgUrl: {
+  imageUrl: {
     type: DataTypes.STRING(255),
     allowNull: false,
     validate: {

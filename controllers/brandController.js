@@ -1,18 +1,18 @@
-const { asyncWrapper } = require("../middleware");
-const { createCustomError } = require("../utils/errors/custom-error");
+const { asyncWrapper } = require('../middleware');
+const { createCustomError } = require('../utils/errors/custom-error');
 
-const Brand = require("../models/brandModel");
+const Brand = require('../models/brandModel');
 
 // Fetch All Brands
 const getBrands = asyncWrapper(async (req, res, next) => {
   const brands = await Brand.findAll();
 
   if (!brands) {
-    console.log("No brands found");
+    console.log('No brands found');
     return next(createCustomError(`No brands found`, 404));
   }
 
-  console.log("Brands successfully fetched");
+  console.log('Brands successfully fetched');
 
   res.status(200).json({
     success: true,
@@ -51,7 +51,7 @@ const addBrand = asyncWrapper(async (req, res, next) => {
   if (!newBrand) {
     return next(createCustomError(`Error creating the brand`, 500));
   }
-  console.log("Created Brand: ", newBrand?.name);
+  console.log('Created Brand: ', newBrand?.name);
 
   res.status(201).json({
     success: true,
