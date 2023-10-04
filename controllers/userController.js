@@ -11,8 +11,11 @@ const { createCustomError } = require('../utils/errors/custom-error');
  */
 const createUser = asyncWrapper(async (req, res, next) => {
   // Destructure required properties from the request body
-  const { firstName, lastName, email, mobile, dateOfBirth, password } =
-    req.body;
+  const { firstName, lastName, email, mobile, dateOfBirth, password } = req.body;  // change to let
+
+  // // Convert first name and last name to lowercase
+  // firstName = firstName.toLowerCase();
+  // lastName = lastName.toLowerCase();
 
   // Check if the user with the provided email already exists
   const exists = await User.findOne({ where: { email: email } });

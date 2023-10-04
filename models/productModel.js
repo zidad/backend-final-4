@@ -73,6 +73,18 @@ const Product = sequelize.define('product',
         },
       },
     },
+    imgUrl: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'Image URL cannot be empty',
+        },
+        isURL: {
+          msg: 'Invalid URL format',
+        },
+      },
+    },
   },
   {
     freezeTableName: true,
