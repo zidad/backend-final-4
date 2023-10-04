@@ -8,7 +8,8 @@ const {
     getProduct,
     updateProduct,
     deleteProduct,
-    searchProducts
+    searchProducts,
+    getProductRatingReviews
 } = require('../controllers/productController');
 
 router.get('/', getProducts);
@@ -17,6 +18,8 @@ router.post('/', createProduct);
 router.put('/:id', updateProduct);
 router.delete('/:id', deleteProduct);
 router.get('/v1/search', searchProducts);
+router.get('/ratingreviews/:id', getProductRatingReviews);
+
 
 
 module.exports = router;

@@ -3,83 +3,83 @@ const sequelize = require('../utils/dataBaseConnection');
 const bcrypt = require('bcrypt');
 
 
-const User = sequelize.define('user',{
-    id: {
-      type: DataTypes.INTEGER(15),
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    firstName: {
-      type: DataTypes.STRING(25),
-      allowNull: false,
-      validate: {
-        isAlpha: {
-          msg: "First name must only contain letters",
-        },
+const User = sequelize.define('user', {
+  id: {
+    type: DataTypes.INTEGER(15),
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  firstName: {
+    type: DataTypes.STRING(25),
+    allowNull: false,
+    validate: {
+      isAlpha: {
+        msg: 'First name must only contain letters',
       },
     },
-    lastName: {
-      type: DataTypes.STRING(25),
-      allowNull: false,
-      validate: {
-        isAlpha: {
-          msg: "Last name must only contain letters",
-        },
+  },
+  lastName: {
+    type: DataTypes.STRING(25),
+    allowNull: false,
+    validate: {
+      isAlpha: {
+        msg: 'Last name must only contain letters',
       },
     },
-    email: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: {
-          msg: "Invalid email format",
-        },
+  },
+  email: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: {
+        msg: 'Invalid email format',
       },
     },
-    mobile: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      validate: {
-        isNumeric: {
-          msg: "Mobile must only contain numbers",
-        },
+  },
+  mobile: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    validate: {
+      isNumeric: {
+        msg: 'Mobile must only contain numbers',
       },
     },
-    dateOfBirth: {
-      type: DataTypes.DATEONLY,
-      allowNull: true,
-      validate: {
-        isDate: {
-          msg: "Invalid date format",
-        },
+  },
+  dateOfBirth: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    validate: {
+      isDate: {
+        msg: 'Invalid date format',
       },
     },
-    password: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      set(value) {
-        const hashedPassword = bcrypt.hashSync(value, 10);
-        this.setDataValue("password", hashedPassword);
-      },
-      // validate: {
-      //     len: {
-      //         args: [6, 25],
-      //         msg: 'Password must be between 6 and 25 characters',
-      //     },
-      // },
+  },
+  password: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    set(value) {
+      const hashedPassword = bcrypt.hashSync(value, 10);
+      this.setDataValue('password', hashedPassword);
     },
-    fullName: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return `${this.getDataValue('firstName')} ${this.getDataValue('lastName')}`;
-      },
+    // validate: {
+    //     len: {
+    //         args: [6, 25],
+    //         msg: 'Password must be between 6 and 25 characters',
+    //     },
+    // },
+  },
+  fullName: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return `${this.getDataValue('firstName')} ${this.getDataValue('lastName')}`;
     },
-  }, {
-    freezeTableName: true,
-    timestamps: false,
-  });
+  },
+}, {
+  freezeTableName: true,
+  timestamps: false,
+});
 
 
 module.exports = User;

@@ -59,6 +59,7 @@ const Address = sequelize.define('address', {
     timestamps: false,
 });
 
+// Associations
 Address.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(Address, { foreignKey: 'userId' });
 
