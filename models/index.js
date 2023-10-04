@@ -3,6 +3,9 @@ const CartItem = require('./cartItemModel');
 const Cart = require('./cartModel');
 const Product = require('./productModel');
 const User = require('./userModel');
+const Payment = require('./paymentModel');
+const Order = require('./orderModel');
+const OrderItem = require('./orderItemModel');
 
 module.exports = {
   Address,
@@ -10,4 +13,7 @@ module.exports = {
   Cart,
   Product,
   User,
+  Payment,
+  Order,
+  OrderItem,
 };
