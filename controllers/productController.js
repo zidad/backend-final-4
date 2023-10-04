@@ -1,7 +1,7 @@
-const { Product } = require("../models");
-const { asyncWrapper } = require("../middleware");
-const { createCustomError } = require("../utils/errors/custom-error");
-const { Op } = require("sequelize");
+const { Product } = require('../models');
+const { asyncWrapper } = require('../middleware');
+const { createCustomError } = require('../utils/errors/custom-error');
+const { Op } = require('sequelize');
 
 // Create a new product in the database
 const createProduct = asyncWrapper(async (req, res) => {
@@ -21,7 +21,7 @@ const createProduct = asyncWrapper(async (req, res) => {
     totalRating,
     ratingCount,
   });
-  console.log("Created product: ", product?.title);
+  console.log('Created product: ', product?.title);
   res.status(201).json({
     success: true,
     message: `Product created Successfully`,
@@ -32,7 +32,7 @@ const createProduct = asyncWrapper(async (req, res) => {
 // Get all products from the database
 const getProducts = asyncWrapper(async (req, res) => {
   const products = await Product.findAll();
-  console.log("Products Are Fetched");
+  console.log('Products Are Fetched');
   res.status(200).json({
     success: true,
     message: `Products Fetched Successfully`,
@@ -45,7 +45,7 @@ const getProduct = asyncWrapper(async (req, res, next) => {
   const id = Number(req.params.id);
 
   const product = await Product.findByPk(id);
-  console.log("Product: ", product?.firstName);
+  console.log('Product: ', product?.firstName);
   if (product) {
     return res.status(200).json({
       success: true,
@@ -74,14 +74,14 @@ const updateProduct = asyncWrapper(async (req, res, next) => {
     { where: { id } }
   );
 
-  console.log("Updated Row Count: ", updatedRowCount);
+  console.log('Updated Row Count: ', updatedRowCount);
 
   if (updatedRowCount === 0) {
     return next(createCustomError(`No product with id: ${id} is found`, 404));
   }
 
   const updatedProduct = await Product.findByPk(id);
-  console.log("Updated product: ", updatedProduct?.firstName);
+  console.log('Updated product: ', updatedProduct?.firstName);
   res.status(200).json({
     success: true,
     message: `Products Updated Successfully`,
@@ -99,10 +99,10 @@ const deleteProduct = asyncWrapper(async (req, res, next) => {
     return next(createCustomError(`No product with id: ${id} is found`, 404));
   }
 
-  console.log("Deleted product : ", deletedRowCount);
+  console.log('Deleted product : ', deletedRowCount);
   res
     .status(200)
-    .json({ success: true, message: "Product deleted successfully" });
+    .json({ success: true, message: 'Product deleted successfully' });
 });
 
 // Search products by keyword
@@ -112,7 +112,7 @@ const searchProducts = asyncWrapper(async (req, res) => {
   if (!keyword) {
     return res.status(400).json({
       success: false,
-      error: "Keyword parameter is required for search",
+      error: 'Keyword parameter is required for search',
     });
   }
 
@@ -128,7 +128,7 @@ const searchProducts = asyncWrapper(async (req, res) => {
   console.log(`Products matching keyword '${keyword}': `, products);
   res.status(200).json({
     success: true,
-    message: "Operation successful",
+    message: 'Operation successful',
     data: products,
   });
 });
