@@ -1,5 +1,6 @@
 const { CustomAPIError } = require('../utils/errors/custom-error');
-const errorHandler = (err, req, res) => { // remove next
+// eslint-disable-next-line no-unused-vars
+const errorHandler = (err, req, res, next) => {
   if (err instanceof CustomAPIError) {
     return res.status(err.statusCode).json({ msg: err.message });
   }

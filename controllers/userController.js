@@ -1,12 +1,23 @@
-const { User, Address } = require('../models');
+// Import necessary modules and dependencies
+const { User, Address, RatingReview } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 
-// Create a new user in the database
+/**
+ * Creates a new user in the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
 const createUser = asyncWrapper(async (req, res, next) => {
+  // Destructure required properties from the request body
   const { firstName, lastName, email, mobile, dateOfBirth, password } =
     req.body;
+
+  // Check if the user with the provided email already exists
   const exists = await User.findOne({ where: { email: email } });
+
+  // If the user doesn't exist, create a new user; otherwise, return a custom error
   if (!exists) {
     const user = await User.create({
       firstName,
@@ -16,39 +27,55 @@ const createUser = asyncWrapper(async (req, res, next) => {
       dateOfBirth,
       password,
     });
-    // To-DO small letters
+
+    // Log the created user and send a success response
     console.log('Created user: ', user?.firstName);
     return res.status(201).json({
       success: true,
-      message: 'User Created successfully',
+      message: 'User created successfully',
       data: user,
     });
   } else {
-    return next(createCustomError(`email ${email} is already exist`, 400));
+    return next(createCustomError(`Email ${email} is already exist`, 400));
   }
 });
 
-// Get all users from the database
+/**
+ * Retrieves all users from the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const getUsers = asyncWrapper(async (req, res) => {
+  // Fetch all users from the database
   const users = await User.findAll();
-  console.log('Users Are Fetched');
+
+  // Log the successful retrieval and send a response with the users
+  console.log('Users are fetched');
   res.status(200).json({
     success: true,
-    message: 'Users Fetched successfully',
+    message: 'Users fetched successfully',
     data: users,
   });
 });
 
-// Get a single user by ID from the database
+/**
+ * Retrieves a single user by ID from the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
 const getUser = asyncWrapper(async (req, res, next) => {
+  // Extract user ID from request parameters
   const id = Number(req.params.id);
 
+  // Find the user by ID in the database
   const user = await User.findByPk(id);
-  console.log('User: ', user?.firstName);
+
+  // If the user is found, send a success response; otherwise, invoke the next middleware with a custom error
   if (user) {
     return res.status(200).json({
       success: true,
-      message: 'User Fetched successfully',
+      message: 'User fetched successfully',
       data: user,
     });
   } else {
@@ -56,19 +83,27 @@ const getUser = asyncWrapper(async (req, res, next) => {
   }
 });
 
-// Update a user by ID in the database
+/**
+ * Updates a user by ID in the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
 const updateUser = asyncWrapper(async (req, res, next) => {
+  // Extract user ID from request parameters
   const id = Number(req.params.id);
 
+  // Destructure user properties from the request body
   const { firstName, lastName, email, mobile, dateOfBirth, password } =
     req.body;
+
+  // Update the user in the database
   const [updatedRowCount] = await User.update(
     { firstName, lastName, email, mobile, dateOfBirth, password },
     { where: { id } }
   );
 
-  console.log('Updated Row Count: ', updatedRowCount);
-
+  // If no rows are updated, invoke the next middleware with a custom error; otherwise, fetch the updated user and send a success response
   if (updatedRowCount === 0) {
     return next(createCustomError(`No user with id: ${id} is found`, 404));
   }
@@ -77,43 +112,95 @@ const updateUser = asyncWrapper(async (req, res, next) => {
   console.log('Updated user: ', updatedUser?.firstName);
   res.status(200).json({
     success: true,
-    message: 'User Updated successfully',
+    message: 'User updated successfully',
     data: updatedUser,
   });
 });
 
-// Delete a user by ID from the database
+/**
+ * Deletes a user by ID from the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
 const deleteUser = asyncWrapper(async (req, res, next) => {
+  // Extract user ID from request parameters
   const id = Number(req.params.id);
 
+  // Delete the user from the database
   const deletedRowCount = await User.destroy({ where: { id } });
 
+  // If no rows are deleted, invoke the next middleware with a custom error; otherwise, log the deletion and send a success response
   if (deletedRowCount === 0) {
     return next(createCustomError(`No user with id: ${id} is found`, 404));
   }
 
-  console.log('Deleted user : ', deletedRowCount);
-  res.status(200).json({ success: true, message: 'User deleted successfully' });
+  console.log('Deleted user: ', deletedRowCount);
+  res.status(200).json({
+    success: true,
+    message: 'User deleted successfully',
+  });
 });
 
-// Get all addresses for the user from the database
+/**
+ * Retrieves all addresses for a user from the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
 const getUserAddresses = asyncWrapper(async (req, res, next) => {
+  // Extract user ID from request parameters
   const userId = Number(req.params.id);
 
+  // Find the user by ID in the database
   const user = await User.findByPk(userId);
 
+  // If the user is not found, invoke the next middleware with a custom error
   if (!user) {
     return next(createCustomError(`No user with id: ${userId} is found`, 404));
   }
 
-  const address = await Address.findAll({ where: { userId } });
+  // Fetch all addresses associated with the user
+  const addresses = await Address.findAll({ where: { userId } });
+
+  // Send a response with user and associated addresses
   return res.json({
     success: true,
-    message: 'User deleted successfully',
-    data: { user: userId, address: address },
+    message: 'User and addresses fetched successfully',
+    data: { user: userId, addresses: addresses },
   });
 });
 
+/**
+ * Retrieves all ratingReviews for a user from the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
+const getUserRatingReviews = asyncWrapper(async (req, res, next) => {
+  // Extract user ID from request parameters
+  const userId = Number(req.params.id);
+
+  // Find the user by ID in the database
+  const user = await User.findByPk(userId);
+
+  // If the user is not found, invoke the next middleware with a custom error
+  if (!user) {
+    return next(createCustomError(`No user with id: ${userId} is found`, 404));
+  }
+
+  // Fetch all ratingReviews associated with the user
+  const ratingReviews = await RatingReview.findAll({ where: { userId } });
+
+  // Send a response with user and associated ratingReviews
+  return res.json({
+    success: true,
+    message: 'User and RatingReview fetched successfully',
+    data: { user: userId, ratingReviews: ratingReviews },
+  });
+});
+
+// Export the API functions
 module.exports = {
   createUser,
   getUsers,
@@ -121,4 +208,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getUserAddresses,
+  getUserRatingReviews,
 };
