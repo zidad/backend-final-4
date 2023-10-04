@@ -10,9 +10,6 @@ const {
   cartRoutes,
   productRoutes,
   userRoutes,
-  
-  paymentRoutes,
-  orderRoutes,
 } = require('./routes');
 
 // Middlewares
@@ -23,10 +20,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
-
-
-app.use('/api/payments', paymentRoutes);
-app.use('/api/orders', orderRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
