@@ -10,6 +10,8 @@ const {
   cartRoutes,
   productRoutes,
   userRoutes,
+  paymentRoutes,
+  orderRoutes,
   ratingReviewRoutes,
 } = require('./routes');
 
@@ -22,6 +24,8 @@ app.use('/api/addresses', addressRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/ratingreviews', ratingReviewRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/orders', orderRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
