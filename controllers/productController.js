@@ -57,8 +57,33 @@ const getProducts = asyncWrapper(async (req, res) => {
   });
 });
 
+// /**
+//  * Retrieves a single product by ID from the database.
+//  * @param {Object} req - Express request object.
+//  * @param {Object} res - Express response object.
+//  * @param {function} next - Express next middleware function.
+//  */
+// const getProduct = asyncWrapper(async (req, res, next) => {
+//   // Extract product ID from request parameters
+//   const id = Number(req.params.id);
+
+//   // Find the product by ID in the database
+//   const product = await Product.findByPk(id);
+
+//   // If the product is found, send a success response; otherwise, invoke the next middleware with a custom error
+//   if (product) {
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Product fetched successfully',
+//       data: product,
+//     });
+//   } else {
+//     return next(createCustomError(`No product with id: ${id} is found`, 404));
+//   }
+// });
+
 /**
- * Retrieves a single product by ID from the database.
+ * Retrieves a single product by ID from the database along with its ratingReviews.
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  * @param {function} next - Express next middleware function.
@@ -70,17 +95,22 @@ const getProduct = asyncWrapper(async (req, res, next) => {
   // Find the product by ID in the database
   const product = await Product.findByPk(id);
 
-  // If the product is found, send a success response; otherwise, invoke the next middleware with a custom error
+  // If the product is found, fetch all ratingReviews associated with the product
   if (product) {
+    const ratingReviews = await RatingReview.findAll({ where: { productId: id } });
+
+    // Send a response with product and associated ratingReviews
     return res.status(200).json({
       success: true,
-      message: 'Product fetched successfully',
-      data: product,
+      message: 'Product and RatingReviews fetched successfully',
+      data: { product, ratingReviews },
     });
   } else {
+    // If the product is not found, invoke the next middleware with a custom error
     return next(createCustomError(`No product with id: ${id} is found`, 404));
   }
 });
+
 
 /**
  * Updates a product by ID in the database.

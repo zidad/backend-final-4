@@ -18,6 +18,10 @@ const User = sequelize.define('user', {
         msg: 'First name must only contain letters',
       },
     },
+    set(value) {
+      // Convert the first name to lowercase before saving
+      this.setDataValue('firstName', value.toLowerCase());
+    },
   },
   lastName: {
     type: DataTypes.STRING(25),
@@ -26,6 +30,10 @@ const User = sequelize.define('user', {
       isAlpha: {
         msg: 'Last name must only contain letters',
       },
+    },
+    set(value) {
+      // Convert the last name to lowercase before saving
+      this.setDataValue('lastName', value.toLowerCase());
     },
   },
   email: {
@@ -63,12 +71,18 @@ const User = sequelize.define('user', {
       const hashedPassword = bcrypt.hashSync(value, 10);
       this.setDataValue('password', hashedPassword);
     },
-    // validate: {
-    //     len: {
-    //         args: [6, 25],
-    //         msg: 'Password must be between 6 and 25 characters',
-    //     },
-    // },
+  },
+  imgUrl: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: 'Image URL cannot be empty',
+      },
+      isURL: {
+        msg: 'Invalid URL format',
+      },
+    },
   },
   fullName: {
     type: DataTypes.VIRTUAL,
