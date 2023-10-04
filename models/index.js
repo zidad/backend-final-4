@@ -10,4 +10,5 @@ module.exports = {
   Cart,
   Product,
   User,
+  
 };
