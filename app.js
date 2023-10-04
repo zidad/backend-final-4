@@ -10,18 +10,21 @@ const {
   cartRoutes,
   productRoutes,
   userRoutes,
+
+  
   ratingReviewRoutes,
 } = require('./routes');
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+
+
 app.use('/api/ratingreviews', ratingReviewRoutes);
 app.use(notFound);
 app.use(errorHandler);
