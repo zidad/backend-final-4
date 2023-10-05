@@ -92,19 +92,29 @@ The application will be accessible at `http://localhost:5000` in your web browse
 ## Usage
 
 This web application includes the following features:
-* User Profiles: Users have their own profiles with customizable information.
-* Address Profiles: Address have their own profiles with customizable information.
-* Product Profiles: Product have their own profiles with customizable information.
 
+- Authentication: we provided "login" and "register" functionally for users using JWT authentication strategy.
+- Users: User have their own profiles with customizable information.
+- Address: Each user have multiple customizable addresses.
+- Admin: We provided an admin user for managing the website data.
+- Product: Searching and Filtering displayed products, also allowing the user to search for handpicked products with high rating and low price, and checking the new arrivals.
+- Rating and Review: Users can add rating and reviews for products.
+- Category: Fetching products based on categories, also allowed the user to check our latest feature categories.
+- Brands: Fetching products based on brands.
+- WishList: Each user is assigned with a list of desired products which he can add products to and delete from.
+- Cart: Each user is assigned with a cart for managing his wanted products which he can add and delete from.
+- Order: The user can order to buy products or cancel the order.
+- Payment: We offer a payment methods for buying the products.
 
 ## Routes
 
-The application includes the following routes:
-- **Home Page**: `/` - Displays the home page with general information.
+Please check the API documentation for more information:
+
+- [API Documentation and Routes](https://documenter.getpostman.com/view/25274258/2s9YJdWN5o)
 
 ## Links
-- **DBschema** : [schema](https://drive.google.com/file/d/1oMzvGsL2REHWoVoemKOW1zyfqvW1-OLJ/view?usp=drive_link)
 
+- **DBschema** : [schema](https://drive.google.com/file/d/1oMzvGsL2REHWoVoemKOW1zyfqvW1-OLJ/view?usp=drive_link)
 
 ## Contributing
 
