@@ -13,11 +13,15 @@ const {
   paymentRoutes,
   orderRoutes,
   ratingReviewRoutes,
+  categoryRoutes,
+  brandRoutes,
+  discountRoutes,
 } = require('./routes');
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/addresses', addressRoutes);
@@ -26,6 +30,10 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/ratingreviews', ratingReviewRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/brands', brandRoutes);
+app.use('/api/discounts', discountRoutes);
+
 app.use(notFound);
 app.use(errorHandler);
 
