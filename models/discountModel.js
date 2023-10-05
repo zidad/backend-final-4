@@ -1,9 +1,8 @@
 // imports
-const DataTypes = require("sequelize");
-const sequelize = require("../utils/dataBaseConnection");
+const DataTypes = require('sequelize');
+const sequelize = require('../utils/dataBaseConnection');
 
-const Discount = sequelize.define(
-  "discount",
+const Discount = sequelize.define('discount',
   {
     id: {
       type: DataTypes.INTEGER(15),
@@ -16,7 +15,7 @@ const Discount = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "Description cannot be empty",
+          msg: 'Description cannot be empty',
         },
       },
     },
@@ -25,18 +24,18 @@ const Discount = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "Discount percentage cannot be empty",
+          msg: 'Discount percentage cannot be empty',
         },
         isFloat: {
-          msg: "Discount percentage must be a valid number",
+          msg: 'Discount percentage must be a valid number',
         },
         min: {
           args: [0],
-          msg: "Discount percentage cannot be negative",
+          msg: 'Discount percentage cannot be negative',
         },
         max: {
           args: [100],
-          msg: "Discount percentage cannot exceed 100%",
+          msg: 'Discount percentage cannot exceed 100%',
         },
       },
     },

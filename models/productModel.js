@@ -1,5 +1,11 @@
 const DataTypes = require('sequelize');
 const sequelize = require('../utils/dataBaseConnection');
+const Category = require('./categoryModel');
+const Brand = require('./brandModel');
+const Discount = require('./discountModel');
+// OrderItem
+
+
 
 const Product = sequelize.define('product',
   {
@@ -73,7 +79,7 @@ const Product = sequelize.define('product',
         },
       },
     },
-    imgUrl: {
+    imageUrl: {
       type: DataTypes.STRING(255),
       allowNull: false,
       validate: {
@@ -85,12 +91,50 @@ const Product = sequelize.define('product',
         },
       },
     },
+    categoryId: {
+      type: DataTypes.INTEGER(15),
+      allowNull: false,
+      references: {
+        model: Category,
+        key: 'id',
+        onDelete: 'CASCADE',
+      },
+    },
+    brandId: {
+      type: DataTypes.INTEGER(15),
+      allowNull: false,
+      references: {
+        model: Brand,
+        key: 'id',
+        onDelete: 'CASCADE',
+      },
+    },
+    discountId: {
+      type: DataTypes.INTEGER(15),
+      allowNull: false,
+      references: {
+        model: Discount,
+        key: 'id',
+        onDelete: 'CASCADE',
+      },
+    },
   },
   {
     freezeTableName: true,
     timestamps: false,
   }
 );
+
+// Associations
+Product.belongsTo(Category, { foreignKey: 'categoryId' });
+Category.hasMany(Product, { foreignKey: 'categoryId' });
+
+Product.belongsTo(Brand, { foreignKey: 'brandId' });
+Brand.hasMany(Product, { foreignKey: 'brandId' });
+
+Product.belongsTo(Discount, { foreignKey: 'discountId' });
+Discount.hasMany(Product, { foreignKey: 'discountId' });
+
 
 module.exports = Product;
 

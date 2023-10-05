@@ -1,9 +1,8 @@
 // imports
-const DataTypes = require("sequelize");
-const sequelize = require("../utils/dataBaseConnection");
+const DataTypes = require('sequelize');
+const sequelize = require('../utils/dataBaseConnection');
 
-const Category = sequelize.define(
-  "category",
+const Category = sequelize.define('category',
   {
     id: {
       type: DataTypes.INTEGER(15),
@@ -16,7 +15,7 @@ const Category = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "Name cannot be empty",
+          msg: 'Name cannot be empty',
         },
       },
     },
@@ -25,10 +24,10 @@ const Category = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "Image URL cannot be empty",
+          msg: 'Image URL cannot be empty',
         },
         isURL: {
-          msg: "Invalid URL format",
+          msg: 'Invalid URL format',
         },
       },
     },

@@ -11,7 +11,7 @@ const { createCustomError } = require('../utils/errors/custom-error');
  */
 const createUser = asyncWrapper(async (req, res, next) => {
   // Destructure required properties from the request body
-  const { firstName, lastName, email, mobile, dateOfBirth, password } = req.body;  // change to let
+  const { firstName, lastName, email, mobile, dateOfBirth, password, imageUrl } = req.body;  // change to let
 
   // // Convert first name and last name to lowercase
   // firstName = firstName.toLowerCase();
@@ -29,6 +29,7 @@ const createUser = asyncWrapper(async (req, res, next) => {
       mobile,
       dateOfBirth,
       password,
+      imageUrl
     });
 
     // Log the created user and send a success response
@@ -97,12 +98,12 @@ const updateUser = asyncWrapper(async (req, res, next) => {
   const id = Number(req.params.id);
 
   // Destructure user properties from the request body
-  const { firstName, lastName, email, mobile, dateOfBirth, password } =
+  const { firstName, lastName, email, mobile, dateOfBirth, password, imageUrl } =
     req.body;
 
   // Update the user in the database
   const [updatedRowCount] = await User.update(
-    { firstName, lastName, email, mobile, dateOfBirth, password },
+    { firstName, lastName, email, mobile, dateOfBirth, password, imageUrl },
     { where: { id } }
   );
 

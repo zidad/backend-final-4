@@ -1,18 +1,18 @@
-const { asyncWrapper } = require("../middleware");
-const { createCustomError } = require("../utils/errors/custom-error");
+const { asyncWrapper } = require('../middleware');
+const { createCustomError } = require('../utils/errors/custom-error');
 
-const Category = require("../models/categoryModel");
+const Category = require('../models/categoryModel');
 
 // Fetch All categories
 const getCategories = asyncWrapper(async (req, res, next) => {
   const categories = await Category.findAll();
 
   if (!categories) {
-    console.log("No categories found");
+    console.log('No categories found');
     return next(createCustomError(`No categories found`, 404));
   }
 
-  console.log("Categories successfully fetched");
+  console.log('Categories successfully fetched');
 
   res.status(200).json({
     success: true,
@@ -52,7 +52,7 @@ const addCategory = asyncWrapper(async (req, res, next) => {
   if (!newCategory) {
     return next(createCustomError(`Error creating the category`, 500));
   }
-  console.log("Created Category: ", newCategory?.name);
+  console.log('Created Category: ', newCategory?.name);
 
   res.status(201).json({
     success: true,

@@ -18,6 +18,9 @@ const createProduct = asyncWrapper(async (req, res) => {
     availableInStock,
     totalRating,
     ratingCount,
+    imageUrl,
+    categoryId,
+    brandId
   } = req.body;
 
   // Create a new product in the database
@@ -28,6 +31,9 @@ const createProduct = asyncWrapper(async (req, res) => {
     availableInStock,
     totalRating,
     ratingCount,
+    imageUrl,
+    categoryId,
+    brandId
   });
 
   // Log the created product and send a success response
@@ -130,11 +136,24 @@ const updateProduct = asyncWrapper(async (req, res, next) => {
     availableInStock,
     totalRating,
     ratingCount,
+    imageUrl,
+    categoryId,
+    brandId
   } = req.body;
 
   // Update the product in the database
   const [updatedRowCount] = await Product.update(
-    { title, description, price, availableInStock, totalRating, ratingCount },
+    {
+      title,
+      description,
+      price,
+      availableInStock,
+      totalRating,
+      ratingCount,
+      imageUrl,
+      categoryId,
+      brandId
+    },
     { where: { id } }
   );
 
@@ -178,34 +197,39 @@ const deleteProduct = asyncWrapper(async (req, res, next) => {
 });
 
 /**
- * Searches products by keyword in the database.
+ * Searches products by keyword or category in the database.
  * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
+ * @param {Object} res - Express response object.s
  */
 const searchProducts = asyncWrapper(async (req, res) => {
-  // Extract keyword from query parameters
+  // Extract keyword and category from query parameters
   const keyword = req.query.keyword;
+  const categoryName = req.query.name;
 
-  // Check if the keyword parameter is provided
-  if (!keyword) {
+  // Check if at least one of the parameters is provided
+  if (!keyword && !categoryName) {
     return res.status(400).json({
       success: false,
-      error: 'Keyword parameter is required for search',
+      error: 'Keyword or category parameter is required for search',
     });
   }
 
-  // Search for products matching the keyword in title or description
-  const products = await Product.findAll({
+  // Define search criteria based on provided parameters
+  const searchCriteria = {
     where: {
       [Op.or]: [
         { title: { [Op.like]: `%${keyword}%` } },
         { description: { [Op.like]: `%${keyword}%` } },
+        { category: { [Op.like]: `%${categoryName}%` } },
       ],
     },
-  });
+  };
 
-  // Log the products matching the keyword and send a response
-  console.log(`Products matching keyword '${keyword}': `, products);
+  // Search for products matching the criteria
+  const products = await Product.findAll(searchCriteria);
+
+  // Log the products matching the keyword or category and send a response
+  console.log(`Products matching keyword '${keyword}' or category '${categoryName}': `, products);
   res.status(200).json({
     success: true,
     message: 'Operation successful',
