@@ -28,12 +28,17 @@ express-app/
 |
 ├── controllers/             # Route Controllers for the application
 │   ├── index.js
-|   ├── userController.js
 |   ├── addressController.js
-|   ├── productController.js
-|   ├── categoryController.js
 |   ├── brandController.js
+|   ├── cartController.js
+|   ├── categoryController.js
 |   ├── discountController.js
+|   ├── index.js
+|   ├── orderController.js
+|   ├── paymentController.js
+|   ├── productController.js
+|   ├── ratingReviewController.js
+|   ├── userController.js
 |
 ├── middlewares/             # Route middlewares for the application
 │   ├── index.js
@@ -42,13 +47,19 @@ express-app/
 │   ├── not-Found.js
 |
 ├── models/                  # Models for the application
-│   ├── connection.js
-│   ├── userModel.js
 │   ├── addressModel.js
-│   ├── productModel.js
-│   ├── categoryModel.js
 │   ├── brandModel.js
-│   ├── discountModel.js
+│   ├── cartItemModel.js
+│   ├── cartModel.js
+│   ├── categoryModel.js
+│   ├── dscountModel.js
+│   ├── index.js
+│   ├── orderItemModel.js
+│   ├── orderModel.js
+│   ├── paymentModel.js
+│   ├── productModel.js
+│   ├── ratingReviewModel.js
+│   ├── userModel.js
 |
 ├── routes/                  # Route handlers for the application
 │   ├── index.js
@@ -58,12 +69,17 @@ express-app/
 │   ├── categoryRouts.js
 │   ├── brandRoutes.js
 │   ├── discountRoutes.js
+│   ├── cartRoutes.js
+│   ├── orderRoutes.js
+│   ├── paymentRoutes.js
+│   ├── ratingReviewRoutes.js
 │
 ├── validators/              # Validators for the application
 │   ├── index.js
 │
 ├── utils/                   # Helper functions for the application
 │   ├── index.js
+│   ├── dataBaseConnection.js
 │   ├── errors/              # Helper module/functions for handling errors across the application
 |   |   ├── custom-error.js
 |
