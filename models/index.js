@@ -7,6 +7,9 @@ const RatingReview = require('./ratingReviewsModel');
 const Payment = require('./paymentModel');
 const Order = require('./orderModel');
 const OrderItem = require('./orderItemModel');
+const Category = require('./categoryModel');
+const Brand = require('./brandModel');
+const Discount = require('./discountModel');
 
 module.exports = {
   Address,
@@ -18,4 +21,7 @@ module.exports = {
   Payment,
   Order,
   OrderItem,
+  Category,
+  Brand,
+  Discount,
 };
