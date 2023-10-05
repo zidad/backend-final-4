@@ -8,7 +8,7 @@ const errorHandler = (err, req, res, next) => {
     .status(500)
     .json({
       success: false,
-      msg: err.message || 'Something Went Wrong',
+      message: err.message || 'Something Went Wrong',
       error: err,
     });
 };

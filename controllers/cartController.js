@@ -4,7 +4,7 @@ const { createCustomError } = require('../utils/errors/custom-error');
 
 // Fetch User's Cart
 const fetchCart = asyncWrapper(async (req, res, next) => {
-  const userId = 2; // Changed later to fetch from the jwt token
+  const userId = 6; // Changed later to fetch from the jwt token
   console.log('Fetching Cart from userId:' + userId);
   const cart = await Cart.findAll({
     where: {
@@ -27,23 +27,28 @@ const fetchCart = asyncWrapper(async (req, res, next) => {
 // Add CartItem to Cart
 const addItemToCart = asyncWrapper(async (req, res) => {
   // remove next
-  const userId = 2;
+  const userId = 6;
   const productId = Number(req.body.productId);
-  const totalPrice = Number(req.body.totalPrice);
   let quantity = Number(req.body.quantity);
   console.log('Adding Item to Cart with userId: ' + userId);
   const user = await User.findByPk(userId); // Changed later to fetch from the jwt token
   const cart = await user.getCart();
-  console.log(await cart.getCartItems());
   const cartItems = await cart.getCartItems({
     where: {
       productId: productId,
     },
   });
   if (cartItems.length > 0 && cartItems[0]) {
-    const oldQuantity = cartItems[0].quantity;
-    quantity += oldQuantity;
-    cartItems[0].quantity = quantity;
+    const newTotal =
+      Number(cart.totalPrice) + Number(cartItems[0].price * quantity);
+    console.log(cart.totalPrice, cartItems[0].price, quantity, newTotal);
+    cart.update({
+      totalPrice: newTotal,
+    });
+    quantity += Number(cartItems[0].quantity);
+    await cartItems[0].update({
+      quantity: quantity,
+    });
     return res.status(200).json({
       success: true,
       message: `Item Added to Cart Successfully`,
@@ -51,8 +56,13 @@ const addItemToCart = asyncWrapper(async (req, res) => {
     });
   } else {
     const fetchedProduct = await Product.findByPk(productId);
+    cart.totalPrice =
+      Number(cart.totalPrice) + Number(fetchedProduct.price * quantity);
+    cart.update({
+      totalPrice: cart.totalPrice,
+    });
     await CartItem.create({
-      price: totalPrice,
+      price: fetchedProduct.price,
       quantity: quantity,
       productId: fetchedProduct.id,
       cartId: cart.id,
@@ -65,58 +75,9 @@ const addItemToCart = asyncWrapper(async (req, res) => {
   }
 });
 
-const updateItemCart = asyncWrapper(async (req, res, next) => {
-  const userId = 2;
-  const cartItemId = Number(req.params.id);
-  const productId = Number(req.body.productId);
-  const totalPrice = Number(req.body.totalPrice);
-  const quantity = Number(req.body.quantity);
-  console.log('Updating Item in Cart with userId: ' + userId);
-  // const user = await User.findByPk(userId); // Changed later to fetch from the jwt token
-  // const cart = await user.getCart();
-  // console.log(await cart.getCartItems());
-  // const cartItems = await cart.getCartItems({
-  //   where: {
-  //     productId: productId
-  //   }
-  // });
-  // if (cartItems.length > 0 && cartItems[0]) {
-  //   const oldQuantity = cartItems[0].quantity;
-  //   quantity += oldQuantity;
-  //   cartItems[0].quantity = quantity;
-  //   cartItems[0].totalPrice = totalPrice;
-  //   return res.status(200).json({
-  //     success: true,
-  //     message: `Item Added to Cart Successfully`,
-  //     data: cartItems[0],
-  //   });
-  const [updatedRowCount] = await CartItem.update(
-    {
-      productId: productId,
-      price: totalPrice,
-      quantity: quantity,
-    },
-    {
-      where: {
-        id: cartItemId,
-      },
-    }
-  );
-  if (updatedRowCount === 0) {
-    return next(createCustomError(`Cart Item Does not exists`, 404));
-  }
-  const updatedCartItem = await CartItem.findByPk(cartItemId);
-  console.log('Updated address: ', updatedCartItem);
-  res.status(200).json({
-    success: true,
-    message: `Address updated Successfully`,
-    data: updatedCartItem,
-  });
-});
-
 const deleteItemCart = asyncWrapper(async (req, res, next) => {
   // remove next
-  const userId = 2;
+  const userId = 6;
   const cartItemId = Number(req.params.id);
   const user = await User.findByPk(userId); // Changed later to fetch from the jwt token
   const cart = await user.getCart();
@@ -128,13 +89,30 @@ const deleteItemCart = asyncWrapper(async (req, res, next) => {
   });
 
   if (cartItems.length > 0 && cartItems[0]) {
-    await cartItems[0].destroy();
-    console.log('Deleted product : ', cartItems[0]);
-    return res.status(200).json({
-      success: true,
-      message: 'Product deleted successfully',
-      data: cartItems[0],
+    const cartNewTotal = Number(cart.totalPrice) - Number(cartItems[0].price);
+    cart.update({
+      totalPrice: cartNewTotal,
     });
+    if (cartItems[0].quantity > 1) {
+      const newQuantity = Number(cartItems[0].quantity) - 1;
+      console.log('Decrease product quantity: ', cartItems[0]);
+      await cartItems[0].update({
+        quantity: newQuantity,
+      });
+      return res.status(200).json({
+        success: true,
+        message: 'Product Quantity Decreased successfully',
+        data: cartItems[0],
+      });
+    } else {
+      await cartItems[0].destroy();
+      console.log('Deleted product : ', cartItems[0]);
+      return res.status(200).json({
+        success: true,
+        message: 'Product deleted successfully',
+        data: cartItems[0],
+      });
+    }
   } else {
     return next(createCustomError(`Cart Item Does not exists`, 404));
   }
@@ -142,21 +120,23 @@ const deleteItemCart = asyncWrapper(async (req, res, next) => {
 
 const deleteAllItemsCart = asyncWrapper(async (req, res, next) => {
   // remove next
-  const userId = 2;
+  const userId = 6;
   const user = await User.findByPk(userId); // Changed later to fetch from the jwt token
   const cart = await user.getCart();
-  console.log(await cart.getCartItems());
   const cartItems = await cart.getCartItems();
 
   if (cartItems.length > 0) {
     for (const item of cartItems) {
       item.destroy();
     }
+    cart.update({
+      totalPrice: 0,
+    });
     console.log('Deleted cart id: ', cart.id);
     return res.status(200).json({
       success: true,
       message: 'Product deleted successfully',
-      data: cartItems[0],
+      data: cartItems,
     });
   } else {
     return next(
@@ -168,7 +148,6 @@ const deleteAllItemsCart = asyncWrapper(async (req, res, next) => {
 module.exports = {
   fetchCart,
   addItemToCart,
-  updateItemCart,
   deleteItemCart,
   deleteAllItemsCart,
 };
