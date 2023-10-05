@@ -19,7 +19,7 @@ const Category = sequelize.define('category',
         },
       },
     },
-    imgUrl: {
+    imageUrl: {
       type: DataTypes.STRING(255),
       allowNull: false,
       validate: {

@@ -220,7 +220,7 @@ const searchProducts = asyncWrapper(async (req, res) => {
       [Op.or]: [
         { title: { [Op.like]: `%${keyword}%` } },
         { description: { [Op.like]: `%${keyword}%` } },
-        { category: { [Op.like]: `%${categoryName}%` } },
+        { categoryId: { [Op.like]: `%${categoryName}%` } },
       ],
     },
   };
