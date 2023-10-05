@@ -30,6 +30,9 @@ express-app/
 |   ├── userController.js
 |   ├── addressController.js
 |   ├── productController.js
+|   ├── categoryController.js
+|   ├── brandController.js
+|   ├── discountController.js
 |
 ├── middlewares/             # Route middlewares for the application
 │   ├── index.js
@@ -41,13 +44,19 @@ express-app/
 │   ├── connection.js
 │   ├── userModel.js
 │   ├── addressModel.js
-│   ├── paroductModel.js
+│   ├── productModel.js
+│   ├── categoryModel.js
+│   ├── brandModel.js
+│   ├── discountModel.js
 |
 ├── routes/                  # Route handlers for the application
 │   ├── index.js
 │   ├── userRoutes.js
 │   ├── addressRouts.js
 │   ├── productRoutes.js
+│   ├── categoryRouts.js
+│   ├── brandRoutes.js
+│   ├── discountRoutes.js
 │
 ├── validators/              # Validators for the application
 │   ├── index.js
@@ -55,7 +64,7 @@ express-app/
 ├── utils/                   # Helper functions for the application
 │   ├── index.js
 │   ├── errors/              # Helper module/functions for handling errors across the application
-|   |   ├── custome-error.js
+|   |   ├── custom-error.js
 |
 ├── services/                # Services for the application
 │   ├── index.js
