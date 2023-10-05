@@ -5,15 +5,15 @@ const { createCustomError } = require('../utils/errors/custom-error');
 
 // Fetch User's Orders
 const fetchOrders = asyncWrapper(async (req, res, next) => {
-  const userId = 2; // Changed later to fetch from the jwt token
+  const userId = 6; // Changed later to fetch from the jwt token
   console.log('Fetching order from userId:' + userId);
-  const cart = await Order.findAll({
+  const order = await Order.findAll({
     where: {
       userId: userId,
     },
     include: OrderItem,
   });
-  if (!cart) {
+  if (!order) {
     console.log('Error Fetching order from userId:' + userId);
     return next(createCustomError(`Invalid User`, 403));
   }
@@ -21,7 +21,7 @@ const fetchOrders = asyncWrapper(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: `order successfully Fetched`,
-    data: cart,
+    data: order,
   });
 });
 
