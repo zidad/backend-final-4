@@ -4,7 +4,7 @@ const sequelize = require('../utils/dataBaseConnection');
 const Product = require('./productModel');
 const Cart = require('./cartModel');
 
-
+// cartItem model
 const CartItem = sequelize.define('cartItem', {
   id: {
     type: DataTypes.INTEGER(15),

@@ -3,16 +3,27 @@ const { Cart, Order, OrderItem } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 
-// Fetch User's Orders
+/**
+ * Fetch the user orders based on the authorized user
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
 const fetchOrders = asyncWrapper(async (req, res, next) => {
   const userId = 6; // Changed later to fetch from the jwt token
+
+  // logging the process
   console.log('Fetching order from userId:' + userId);
+
+  // fetch the orders related to the user with their items
   const order = await Order.findAll({
     where: {
       userId: userId,
     },
     include: OrderItem,
   });
+
+  // returns error or response based on the order output
   if (!order) {
     console.log('Error Fetching order from userId:' + userId);
     return next(createCustomError(`Invalid User`, 403));
@@ -25,23 +36,36 @@ const fetchOrders = asyncWrapper(async (req, res, next) => {
   });
 });
 
-//  Create Order
+/**
+ * Create new order based on the authorized user
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
 const createOrder = asyncWrapper(async (req, res, next) => {
+  // process logging
   console.log('Creating Order');
-  const userId = 6;
+
+  // extracting the body data
+  const userId = 6; // Changed later to fetch from the jwt token
+  const cartId = Number(req.body.cartId); // Changed later based on requirements
   const { status } = req.body;
   const tax = Number(req.body.tax);
   const deliveryFee = Number(req.body.deliveryFee);
   const paymentId = Number(req.body.paymentId);
-  const cartId = Number(req.body.cartId);
   const addressId = Number(req.body.addressId);
 
+  // find the cart and the products I want to add to the order
   const cart = await Cart.findByPk(cartId); // cartId is the same as the userId (incase of cartId is changed to multiple)
   const cartItems = await cart.getCartItems();
+  // if no cart items found return error
   if (cartItems.length === 0) {
     return next(createCustomError(`Can not Place order on empty cart`, 500));
   }
+
+  // updating the total price of order based on the taxes and delivery fees
   const totalPrice = Number(cart.totalPrice) + tax + deliveryFee;
+  // creating the order
   const order = await Order.create({
     totalPrice,
     status,
@@ -53,6 +77,7 @@ const createOrder = asyncWrapper(async (req, res, next) => {
     addressId,
   });
 
+  // creating the order items
   for (const item of cartItems) {
     await OrderItem.create({
       price: item.price,
@@ -61,8 +86,9 @@ const createOrder = asyncWrapper(async (req, res, next) => {
       orderId: order.id,
     });
   }
-
+  // logging process
   console.log('Order created', order.id);
+  // response
   res.status(200).json({
     success: true,
     message: `Order created Successfully`,
@@ -70,12 +96,20 @@ const createOrder = asyncWrapper(async (req, res, next) => {
   });
 });
 
-// Get Order
+/**
+ * Fetch the order details based on the id
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
 const getOrder = asyncWrapper(async (req, res, next) => {
+  // fetch id
   const id = Number(req.params.id);
 
-  const order = await Order.findByPk(id);
+  // fetch order and its related items
+  const order = await Order.findByPk(id, { include: OrderItem });
 
+  // exists return response otherwise return error
   if (order) {
     return res.status(200).json({
       success: true,
@@ -124,19 +158,31 @@ const getOrder = asyncWrapper(async (req, res, next) => {
 //     .json({ success: true, message: 'Order deleted successfully' });
 // });
 
-// Cancel Order
+/**
+ * cancel a certain error
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ *
+ * the function will assign status to cancelled for now
+ */
 const cancelOrder = asyncWrapper(async (req, res, next) => {
+  // extracting body data
   const id = Number(req.params.id);
 
+  // updating the order
   const deletedRowCount = await Order.update(
     { status: 'cancelled' },
     { where: { id } }
   );
 
+  // return error if does not exist
   if (deletedRowCount === 0) {
     return next(createCustomError(`No Order with id: ${id} is found`, 404));
   }
+  // logging the process
   console.log('Cancelled Order : ', deletedRowCount);
+  // return response
   res
     .status(200)
     .json({ success: true, message: 'Order Cancelled successfully' });
