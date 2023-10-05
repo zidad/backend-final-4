@@ -9,7 +9,7 @@ const {
 } = require('../controllers/discountController');
 
 router.get('/:id', getDiscount);
-router.post('/:id', addDiscount);
+router.post('/', addDiscount);
 router.put('/:id', updateDiscount);
 router.delete('/:id', deleteDiscount);
 
