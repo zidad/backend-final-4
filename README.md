@@ -10,6 +10,7 @@ This is an e-commerce web application built using Node.js and the Express.js fra
 - [Installation](#installation)
 - [Usage](#usage)
 - [Routes](#routes)
+- [Links](#links)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -100,6 +101,9 @@ This web application includes the following features:
 
 The application includes the following routes:
 - **Home Page**: `/` - Displays the home page with general information.
+
+## Links
+- **DBschema** : [schema](https://drive.google.com/file/d/1oMzvGsL2REHWoVoemKOW1zyfqvW1-OLJ/view?usp=drive_link)
 
 
 ## Contributing
