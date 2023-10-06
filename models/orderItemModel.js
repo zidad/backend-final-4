@@ -5,8 +5,7 @@ const Product = require('./productModel');
 const Order = require('./orderModel');
 
 // Order Item Model
-const OrderItem = sequelize.define(
-  'orderItem',
+const OrderItem = sequelize.define('orderItem',
   {
     id: {
       type: DataTypes.INTEGER(15),

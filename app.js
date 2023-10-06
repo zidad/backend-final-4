@@ -16,6 +16,7 @@ const {
   categoryRoutes,
   brandRoutes,
   discountRoutes,
+  wishListRoutes
 } = require('./routes');
 
 // Middlewares
@@ -33,6 +34,8 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/discounts', discountRoutes);
+app.use('/api/wishlists', wishListRoutes);
+
 
 app.use(notFound);
 app.use(errorHandler);
