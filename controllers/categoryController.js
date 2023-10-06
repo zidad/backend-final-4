@@ -65,12 +65,12 @@ const getCategory = asyncWrapper(async (req, res, next) => {
  */
 const addCategory = asyncWrapper(async (req, res, next) => {
   // Destructure properties from the request body
-  const { name, imgUrl, isFeatured } = req.body;
+  const { name, imageUrl, isFeatured } = req.body;
 
   // Create a new category in the database
   const newCategory = await Category.create({
     name,
-    imgUrl,
+    imageUrl,
     isFeatured,
   });
 
