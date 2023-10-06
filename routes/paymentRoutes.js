@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { validate } = require('../middleware/validate');
+const { paymentValidator } = require('../validators');
 
 const {
   fetchPayments,
@@ -10,7 +12,7 @@ const {
 } = require('../controllers/paymentController');
 
 router.get('/', fetchPayments);
-router.post('/', createPayment);
+router.post('/', paymentValidator.rules(), validate, createPayment);
 router.get('/:id', getPayment);
 router.put('/:id', updatePayment);
 router.delete('/:id', deletePayment);

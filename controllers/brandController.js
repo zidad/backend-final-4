@@ -65,12 +65,12 @@ const getBrand = asyncWrapper(async (req, res, next) => {
  */
 const addBrand = asyncWrapper(async (req, res, next) => {
   // Destructure properties from the request body
-  const { name, imgUrl } = req.body;
+  const { name, imageUrl } = req.body;
 
   // Create a new brand in the database
   const newBrand = await Brand.create({
     name,
-    imgUrl,
+    imageUrl,
   });
 
   // If there's an error creating the brand, return a custom error

@@ -49,9 +49,9 @@ const createOrder = asyncWrapper(async (req, res, next) => {
   // extracting the body data
   const userId = 6; // Changed later to fetch from the jwt token
   const cartId = Number(req.body.cartId); // Changed later based on requirements
-  const { status } = req.body;
-  const tax = Number(req.body.tax);
-  const deliveryFee = Number(req.body.deliveryFee);
+  const { status, date } = req.body;
+  const tax = 0;
+  const deliveryFee = 12;
   const paymentId = Number(req.body.paymentId);
   const addressId = Number(req.body.addressId);
 
@@ -68,6 +68,7 @@ const createOrder = asyncWrapper(async (req, res, next) => {
   // creating the order
   const order = await Order.create({
     totalPrice,
+    date,
     status,
     tax,
     deliveryFee,
