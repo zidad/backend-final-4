@@ -1,5 +1,5 @@
 // Import necessary modules and dependencies
-const { WishList, Product } = require('../models');
+const { WishList, WishListItem } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 
@@ -70,7 +70,7 @@ const getWishLists = asyncWrapper(async (req, res) => {
 // });
 
 /**
- * Retrieves a single wish list by ID from the database along with its products
+ * Retrieves a single wish list by ID from the database along with its wish list items
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  * @param {function} next - Express next middleware function.
@@ -82,15 +82,15 @@ const getWishList = asyncWrapper(async (req, res, next) => {
     // Find the wish list by ID in the database
     const wishList = await WishList.findByPk(id);
 
-    // If the wish list is found, fetch all products associated with the wishList
+    // If the wish list is found, fetch all wish list items associated with the wishList
     if (wishList) {
-        const products = await Product.findAll({ where: { wishListId: id } });
+        const wishListItem = await WishListItem.findAll({ where: { wishListId: id } });
 
-        // Send a response with wish list and associated products
+        // Send a response with wish list and associated wish list items
         return res.status(200).json({
             success: true,
-            message: 'Wish List and products fetched successfully',
-            data: { wishList, products },
+            message: 'Wish List and wish list items fetched successfully',
+            data: { wishList, wishListItem },
         });
     } else {
         // If the wish list is not found, invoke the next middleware with a custom error
@@ -124,7 +124,7 @@ const updateWishList = asyncWrapper(async (req, res, next) => {
 
     // If no rows are updated, invoke the next middleware with a custom error; otherwise, fetch the updated wish list and send a success response
     if (updatedRowCount === 0) {
-        return next(createCustomError(`No product with id: ${id} is found`, 404));
+        return next(createCustomError(`No wish list items with id: ${id} is found`, 404));
     }
 
     const updatedWishList = await WishList.findByPk(id);
@@ -162,12 +162,12 @@ const deleteWishList = asyncWrapper(async (req, res, next) => {
 });
 
 /**
- * Retrieves all wish lists for a product from the database.
+ * Retrieves all wish lists for a wish list items from the database.
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  * @param {function} next - Express next middleware function.
  */
-const getWishListProducts = asyncWrapper(async (req, res, next) => {
+const getWishListItems = asyncWrapper(async (req, res, next) => {
     // Extract WishList ID from request parameters
     const wishListId = Number(req.params.id);
 
@@ -179,14 +179,14 @@ const getWishListProducts = asyncWrapper(async (req, res, next) => {
         return next(createCustomError(`No wish list with id: ${wishListId} is found`, 404));
     }
 
-    // Fetch all products associated with the wish list
-    const products = await Product.findAll({ where: { wishListId } });
+    // Fetch all wish list items associated with the wish list
+    const wishListItem = await WishListItem.findAll({ where: { wishListId } });
 
-    // Send a response with wish list and associated products
+    // Send a response with wish list and associated wish list items
     return res.json({
         success: true,
-        message: 'Wish list and products fetched successfully',
-        data: { wishList: wishListId, products: products },
+        message: 'Wish list and wish list item fetched successfully',
+        data: { wishList: wishListId, wishListItem: wishListItem },
     });
 });
 
@@ -197,5 +197,5 @@ module.exports = {
     getWishList,
     updateWishList,
     deleteWishList,
-    getWishListProducts
+    getWishListItems
 };

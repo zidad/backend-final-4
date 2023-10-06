@@ -43,7 +43,7 @@ module.exports = [
         'tax': 8.75,
         'deliveryFee': 5.00,
         'paymentId': 4,
-        'cartId': 4,
+        'cartId': 1,
         'userId': 2,
         'addressId': 4
     },
@@ -55,7 +55,7 @@ module.exports = [
         'tax': 30.00,
         'deliveryFee': 20.00,
         'paymentId': 5,
-        'cartId': 5,
+        'cartId': 2,
         'userId': 1,
         'addressId': 5
     }

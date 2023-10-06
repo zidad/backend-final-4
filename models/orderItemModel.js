@@ -71,7 +71,9 @@ OrderItem.belongsTo(Order, {
 Product.hasMany(OrderItem, {
   foreignKeys: 'productId',
 });
-OrderItem.belongsTo(Product);
+OrderItem.belongsTo(Product, {
+  foreignKeys: 'productId',
+});
 
 //exports
 module.exports = OrderItem;
