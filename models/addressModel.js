@@ -22,8 +22,8 @@ const Address = sequelize.define('address', {
         type: DataTypes.STRING(20),
         allowNull: false,
         validate: {
-            isNumeric: {
-                msg: 'Postal code must only contain numbers',
+            isAlphanumeric: {
+                msg: 'Postal code must only contain letters and numbers',
             },
         },
     },
