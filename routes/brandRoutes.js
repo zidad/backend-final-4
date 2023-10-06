@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { validate } = require('../middleware/validate');
+const { brandValidator } = require('../validators');
 
 const {
   getBrands,
@@ -11,7 +13,7 @@ const {
 
 router.get('/', getBrands);
 router.get('/:id', getBrand);
-router.post('/', addBrand);
+router.post('/', brandValidator.rules(), validate, addBrand);
 router.put('/:id', updateBrand);
 router.delete('/:id', deleteBrand);
 

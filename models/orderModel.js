@@ -102,10 +102,10 @@ const Order = sequelize.define(
 );
 
 //Order Associations
-Order.hasOne(Address, {
+Address.hasOne(Order);
+Order.belongsTo(Address, {
   foreignKey: 'addressId',
 });
-Address.belongsTo(Order);
 
 User.hasMany(Order, {
   foreignKeys: 'userId',

@@ -20,7 +20,8 @@ const createProduct = asyncWrapper(async (req, res) => {
     ratingCount,
     imageUrl,
     categoryId,
-    brandId
+    brandId,
+    discountId,
   } = req.body;
 
   // Create a new product in the database
@@ -33,7 +34,8 @@ const createProduct = asyncWrapper(async (req, res) => {
     ratingCount,
     imageUrl,
     categoryId,
-    brandId
+    brandId,
+    discountId,
   });
 
   // Log the created product and send a success response
@@ -103,7 +105,9 @@ const getProduct = asyncWrapper(async (req, res, next) => {
 
   // If the product is found, fetch all ratingReviews associated with the product
   if (product) {
-    const ratingReviews = await RatingReview.findAll({ where: { productId: id } });
+    const ratingReviews = await RatingReview.findAll({
+      where: { productId: id },
+    });
 
     // Send a response with product and associated ratingReviews
     return res.status(200).json({
@@ -116,7 +120,6 @@ const getProduct = asyncWrapper(async (req, res, next) => {
     return next(createCustomError(`No product with id: ${id} is found`, 404));
   }
 });
-
 
 /**
  * Updates a product by ID in the database.
@@ -138,7 +141,7 @@ const updateProduct = asyncWrapper(async (req, res, next) => {
     ratingCount,
     imageUrl,
     categoryId,
-    brandId
+    brandId,
   } = req.body;
 
   // Update the product in the database
@@ -152,7 +155,7 @@ const updateProduct = asyncWrapper(async (req, res, next) => {
       ratingCount,
       imageUrl,
       categoryId,
-      brandId
+      brandId,
     },
     { where: { id } }
   );
@@ -229,7 +232,10 @@ const searchProducts = asyncWrapper(async (req, res) => {
   const products = await Product.findAll(searchCriteria);
 
   // Log the products matching the keyword or category and send a response
-  console.log(`Products matching keyword '${keyword}' or category '${categoryName}': `, products);
+  console.log(
+    `Products matching keyword '${keyword}' or category '${categoryName}': `,
+    products
+  );
   res.status(200).json({
     success: true,
     message: 'Operation successful',
@@ -252,7 +258,9 @@ const getProductRatingReviews = asyncWrapper(async (req, res, next) => {
 
   // If the product is not found, invoke the next middleware with a custom error
   if (!product) {
-    return next(createCustomError(`No product with id: ${productId} is found`, 404));
+    return next(
+      createCustomError(`No product with id: ${productId} is found`, 404)
+    );
   }
 
   // Fetch all ratingReviews associated with the product
@@ -274,5 +282,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   searchProducts,
-  getProductRatingReviews
+  getProductRatingReviews,
 };

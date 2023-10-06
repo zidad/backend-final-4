@@ -44,12 +44,14 @@ const createUser = asyncWrapper(async (req, res, next) => {
     console.log('Created user: ', user?.firstName);
 
     // Create the cart associated with the user
-    Cart.create({
-      id: user.id,
-      totalPrice: 0,
-      userId: user.id,
-    });
-
+    const cart = await Cart.findByPk(user.id);
+    if (!cart) {
+      await Cart.create({
+        id: user.id,
+        totalPrice: 0,
+        userId: user.id,
+      });
+    }
     return res.status(201).json({
       success: true,
       message: 'User created successfully',

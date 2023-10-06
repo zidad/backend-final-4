@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { validate } = require('../middleware/validate');
+const { categoryValidator } = require('../validators');
 
 const {
   getCategories,
@@ -11,7 +13,7 @@ const {
 
 router.get('/', getCategories);
 router.get('/:id', getCategory);
-router.post('/', addCategory);
+router.post('/', categoryValidator.rules(), validate ,addCategory);
 router.put('/:id', updateCategory);
 router.delete('/:id', deleteCategory);
 
