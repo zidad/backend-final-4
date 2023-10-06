@@ -74,12 +74,17 @@ express-app/
 │   ├── paymentRoutes.js
 │   ├── ratingReviewRoutes.js
 │
+├── seeders/                 # Seeder functions for the adding data into database
+│   ├── index.js
+|
 ├── validators/              # Validators for the application
 │   ├── index.js
 │
 ├── utils/                   # Helper functions for the application
 │   ├── index.js
 │   ├── dataBaseConnection.js
+│   ├── constants/           # Helper data seeders for filling the database with data
+|   |   ├── userSeeder.js
 │   ├── errors/              # Helper module/functions for handling errors across the application
 |   |   ├── custom-error.js
 |
