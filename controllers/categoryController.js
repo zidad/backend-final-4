@@ -116,7 +116,7 @@ const updateCategory = asyncWrapper(async (req, res) => {
   res.status(200).json({
     success: true,
     message: `Category updated successfully`,
-    data: updatedCategory,
+    data: updatedCategory[0],
   });
 });
 
