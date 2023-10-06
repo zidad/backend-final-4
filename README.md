@@ -10,6 +10,7 @@ This is an e-commerce web application built using Node.js and the Express.js fra
 - [Installation](#installation)
 - [Usage](#usage)
 - [Routes](#routes)
+- [Technologies](#technologies)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -75,7 +76,19 @@ This web application includes the following features:
 
 The application includes the following routes:
 
+## Technologies
 
+- Environment: **NodeJs**
+- Framework: **Express**
+- ORM: **Sequelize**
+- DataBase: **MySql**
+- Validations: **express-validator**
+- Developer tools and libraries:
+  * **nodemon**
+  * **dotenv**
+  * **bcrypt**
+- Testing:
+  * **Postman**
 
 ## Contributing
 
