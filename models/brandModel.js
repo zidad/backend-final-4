@@ -19,7 +19,7 @@ const Brand = sequelize.define('brand',
         },
       },
     },
-    imgUrl: {
+    imageUrl: {
       type: DataTypes.STRING(255),
       allowNull: false,
       validate: {

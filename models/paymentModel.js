@@ -43,9 +43,7 @@ const Payment = sequelize.define(
       type: DataTypes.STRING(20),
       allowNull: false,
       validate: {
-        isAlpha: {
-          msg: 'type must only contain letters',
-        },
+        is: /^[a-zA-Z\s]+$/,
       },
     },
   },
