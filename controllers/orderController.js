@@ -10,7 +10,7 @@ const { createCustomError } = require('../utils/errors/custom-error');
  * @param {function} next - Express next middleware function.
  */
 const fetchOrders = asyncWrapper(async (req, res, next) => {
-  const userId = 6; // Changed later to fetch from the jwt token
+  const userId = req.body.userId; // Changed later to fetch from the jwt token
 
   // logging the process
   console.log('Fetching order from userId:' + userId);
@@ -47,7 +47,7 @@ const createOrder = asyncWrapper(async (req, res, next) => {
   console.log('Creating Order');
 
   // extracting the body data
-  const userId = 6; // Changed later to fetch from the jwt token
+  const userId = req.body.userId; // Changed later to fetch from the jwt token
   const cartId = Number(req.body.cartId); // Changed later based on requirements
   const { status, date } = req.body;
   const tax = 0;

@@ -9,7 +9,7 @@ const { createCustomError } = require('../utils/errors/custom-error');
  * @param {function} next - Express next middleware function.
  */
 const fetchCart = asyncWrapper(async (req, res, next) => {
-  const userId = 6; // Changed later to fetch from the jwt token
+  const userId = req.body.userId; // Changed later to fetch from the jwt token
 
   // logging the process
   console.log('Fetching Cart from userId:' + userId);
@@ -44,7 +44,7 @@ const fetchCart = asyncWrapper(async (req, res, next) => {
  */
 const addItemToCart = asyncWrapper(async (req, res) => {
   // fetch userId from the body
-  const userId = 6; // Changed later to fetch from the jwt token
+  const userId =req.body.userId; // Changed later to fetch from the jwt token
   // Extract data from the body
   const productId = Number(req.body.productId);
   let quantity = Number(req.body.quantity);
@@ -110,7 +110,7 @@ const addItemToCart = asyncWrapper(async (req, res) => {
  */
 const deleteItemCart = asyncWrapper(async (req, res, next) => {
   // fetch body data
-  const userId = 6; // Changed later to fetch from the jwt token
+  const userId = req.body.userId; // Changed later to fetch from the jwt token
   const cartItemId = Number(req.params.id);
 
   // fetch the user and cart
@@ -166,7 +166,7 @@ const deleteItemCart = asyncWrapper(async (req, res, next) => {
  */
 const deleteAllItemsCart = asyncWrapper(async (req, res, next) => {
   // fetch body data
-  const userId = 6; // Changed later to fetch from the jwt token
+  const userId = req.body.userId; // Changed later to fetch from the jwt token
 
   // fetch the user and cart
   const user = await User.findByPk(userId);
