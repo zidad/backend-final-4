@@ -8,6 +8,8 @@ const ratingReviewRoutes = require('./ratingReviewRoutes');
 const categoryRoutes = require('./categoryRoutes');
 const brandRoutes = require('./brandRoutes');
 const discountRoutes = require('./discountRoutes');
+const wishListRoutes = require('./wishListRoutes');
+
 
 
 
@@ -22,4 +24,5 @@ module.exports = {
   categoryRoutes,
   brandRoutes,
   discountRoutes,
+  wishListRoutes
 };

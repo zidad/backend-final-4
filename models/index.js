@@ -10,6 +10,7 @@ const OrderItem = require('./orderItemModel');
 const Category = require('./categoryModel');
 const Brand = require('./brandModel');
 const Discount = require('./discountModel');
+const WishList = require('./wishListModel');
 
 module.exports = {
   Address,
@@ -24,4 +25,5 @@ module.exports = {
   Category,
   Brand,
   Discount,
+  WishList
 };

@@ -3,7 +3,7 @@ const sequelize = require('../utils/dataBaseConnection');
 const User = require('./userModel');
 const Product = require('./productModel');
 
-const RatingReview = sequelize.define('rating-review', {
+const RatingReview = sequelize.define('ratingReview', {
     id: {
         type: DataTypes.INTEGER(15),
         allowNull: false,

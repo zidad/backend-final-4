@@ -3,8 +3,7 @@ const sequelize = require('../utils/dataBaseConnection');
 const Category = require('./categoryModel');
 const Brand = require('./brandModel');
 const Discount = require('./discountModel');
-// OrderItem
-
+const WishList = require('./wishListModel');
 
 
 const Product = sequelize.define('product',
@@ -111,9 +110,18 @@ const Product = sequelize.define('product',
     },
     discountId: {
       type: DataTypes.INTEGER(15),
-      allowNull: false,
+      allowNull: true,
       references: {
         model: Discount,
+        key: 'id',
+        onDelete: 'CASCADE',
+      },
+    },
+    wishListId: {
+      type: DataTypes.INTEGER(15),
+      allowNull: false,
+      references: {
+        model: WishList,
         key: 'id',
         onDelete: 'CASCADE',
       },
@@ -135,12 +143,7 @@ Brand.hasMany(Product, { foreignKey: 'brandId' });
 Product.belongsTo(Discount, { foreignKey: 'discountId' });
 Discount.hasMany(Product, { foreignKey: 'discountId' });
 
+Product.belongsTo(WishList, { foreignKey: 'wishListId' });
+WishList.hasMany(Product, { foreignKey: 'wishListId' });
 
 module.exports = Product;
-
-// To-Do
-// carigoryId FK
-// discountId FK
-// ratingId FK
-// brandId FK
-// imageUrl field

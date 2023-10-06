@@ -8,6 +8,8 @@ const orderController = require('./orderController');
 const categoryController = require('./categoryController');
 const brandController = require('./brandController');
 const discountController = require('./discountController');
+const wishListController = require('./wishListController');
+
 
 
 
@@ -22,4 +24,5 @@ module.exports = {
   categoryController,
   brandController,
   discountController,
+  wishListController
 };
