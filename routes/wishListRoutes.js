@@ -5,16 +5,16 @@ const {
   fetchWishList,
   addItemToWishList,
   removeItemFromWishList,
-  deleteWishList,
+  deleteWishListProducts,
   getWishListItems,
 } = require('../controllers/wishListController');
 
 router.get('/', fetchWishList);   // origin
 router.post('/item', addItemToWishList);  // origin
 router.delete('/item', removeItemFromWishList);  // origin
-router.delete('/', deleteWishList);  // origin
+router.delete('/', deleteWishListProducts);  // origin
 router.post('/', createWishList);
-router.get('/products/:id', getWishListItems);
+router.get('/items/:id', getWishListItems);
 
 
 module.exports = router;

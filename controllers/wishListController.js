@@ -65,7 +65,8 @@ const addItemToWishList = asyncWrapper(async (req, res) => {
 
     // If the user doesn't have a wishlist, create a new one
     if (!wishList) {
-        wishList = await WishList.create({ userId: user.id });
+        wishList = await WishList.create();
+        await user.setWishList(wishList);
     }
 
     // Check if the product already exists in the wish list
@@ -133,11 +134,11 @@ const removeItemFromWishList = asyncWrapper(async (req, res) => {
 });
 
 /**
- * Delete the entire wish list and all its products.
+ * Delete all products in the wish list.
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const deleteWishList = asyncWrapper(async (req, res) => {
+const deleteWishListProducts = asyncWrapper(async (req, res) => {
     const { userId } = req.body;
 
     if (!userId) {
@@ -154,7 +155,7 @@ const deleteWishList = asyncWrapper(async (req, res) => {
     // Get his wishlist (optional)
     const wishList = await user.getWishList();
 
-    // If the wishlist exists, delete it along with all its products
+    // If the wishlist exists, delete all its products
     if (wishList) {
         await WishListItem.destroy({
             where: {
@@ -162,9 +163,7 @@ const deleteWishList = asyncWrapper(async (req, res) => {
             },
         });
 
-        await wishList.destroy();
-
-        return res.status(200).json({ message: 'Wishlist and all its products deleted successfully' });
+        return res.status(200).json({ message: 'All products in wishlist deleted successfully' });
     }
 
     return res.status(404).json({ error: 'Wishlist not found' });
@@ -227,7 +226,7 @@ module.exports = {
     fetchWishList,
     addItemToWishList,
     removeItemFromWishList,
-    deleteWishList,
+    deleteWishListProducts,
     createWishList,
     getWishListItems,
 };
