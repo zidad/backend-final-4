@@ -11,6 +11,8 @@ const Category = require('./categoryModel');
 const Brand = require('./brandModel');
 const Discount = require('./discountModel');
 const WishList = require('./wishListModel');
+const WishListItem = require('./wishListItemModel');
+
 
 module.exports = {
   Address,
@@ -25,5 +27,6 @@ module.exports = {
   Category,
   Brand,
   Discount,
-  WishList
+  WishList,
+  WishListItem
 };

@@ -1,6 +1,6 @@
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
-const Brand = require('../models/brandModel');
+const { Brand, Product } = require('../models');
 
 /**
  * Fetches all brands from the database.
@@ -28,33 +28,63 @@ const getBrands = asyncWrapper(async (req, res, next) => {
   });
 });
 
+// /**
+//  * Fetches a single brand by ID from the database.
+//  * @param {Object} req - Express request object.
+//  * @param {Object} res - Express response object.
+//  * @param {function} next - Express next middleware function.
+//  */
+// const getBrand = asyncWrapper(async (req, res, next) => {
+//   // Extract brand ID from request parameters
+//   const brandId = Number(req.params.id);
+
+//   // Find the brand by ID in the database
+//   const brand = await Brand.findByPk(brandId);
+
+//   // If the brand is not found, log and return a custom error
+//   if (!brand) {
+//     console.log(`Brand with ID ${brandId} not found`);
+//     return next(createCustomError(`Brand not found`, 404));
+//   }
+
+//   console.log(`Brand with ID ${brandId} successfully fetched`);
+
+//   // Send a success response with the fetched brand
+//   res.status(200).json({
+//     success: true,
+//     message: `Brand successfully fetched`,
+//     data: brand,
+//   });
+// });
+
 /**
- * Fetches a single brand by ID from the database.
+ * Fetches a single brand by ID from the database along with its products
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  * @param {function} next - Express next middleware function.
  */
 const getBrand = asyncWrapper(async (req, res, next) => {
   // Extract brand ID from request parameters
-  const brandId = Number(req.params.id);
+  const id = Number(req.params.id);
 
   // Find the brand by ID in the database
-  const brand = await Brand.findByPk(brandId);
+  const brand = await Brand.findByPk(id);
 
   // If the brand is not found, log and return a custom error
-  if (!brand) {
-    console.log(`Brand with ID ${brandId} not found`);
-    return next(createCustomError(`Brand not found`, 404));
+  if (brand) {
+    const products = await Product.findAll({ where: { brandId: id } });
+
+    // Send a success response with the fetched brand and associated products
+    res.status(200).json({
+      success: true,
+      message: `Brand and products successfully fetched`,
+      data: { brand, products },
+    });
+  } else {
+    // If the brand is not found, invoke the next middleware with a custom error
+    return next(createCustomError(`No brand with id: ${id} is found`, 404));
   }
 
-  console.log(`Brand with ID ${brandId} successfully fetched`);
-
-  // Send a success response with the fetched brand
-  res.status(200).json({
-    success: true,
-    message: `Brand successfully fetched`,
-    data: brand,
-  });
 });
 
 /**

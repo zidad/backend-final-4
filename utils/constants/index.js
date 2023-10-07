@@ -10,9 +10,8 @@ const ratingReviewData = require('./ratingReviewSeeder');
 const paymentData = require('./paymentSeeder');
 const orderData = require('./orderSeeder');
 const orderItemData = require('./orderItemSeeder');
-
-
-
+const wishListData = require('./wishListSeeder');
+const wishListItemData = require('./wishListItemSeeder');
 
 
 
@@ -29,4 +28,6 @@ module.exports = {
     paymentData,
     orderData,
     orderItemData,
+    wishListData,
+    wishListItemData
 };
