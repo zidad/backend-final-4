@@ -21,7 +21,7 @@ const WishListItem = sequelize.define('wishListItem', {
     },
     productId: {
         type: DataTypes.INTEGER(15),
-        allowNull: false,
+        allowNull: true,
         references: {
             model: Product,
             key: 'id',

@@ -2,18 +2,19 @@ const express = require('express');
 const router = express.Router();
 const {
   createWishList,
-  getWishLists,
-  getWishList,
-  updateWishList,
+  fetchWishList,
+  addItemToWishList,
+  removeItemFromWishList,
   deleteWishList,
   getWishListItems,
 } = require('../controllers/wishListController');
 
-router.get('/', getWishLists);
-router.get('/:id', getWishList);
+router.get('/', fetchWishList);   // origin
+router.post('/item', addItemToWishList);  // origin
+router.delete('/item', removeItemFromWishList);  // origin
+router.delete('/', deleteWishList);  // origin
 router.post('/', createWishList);
-router.put('/:id', updateWishList);
-router.delete('/:id', deleteWishList);
 router.get('/products/:id', getWishListItems);
+
 
 module.exports = router;
