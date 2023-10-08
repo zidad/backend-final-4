@@ -1,8 +1,8 @@
 // imports
 const { body } = require('express-validator');
 
-// Address Validation Rules
-const brandValidationRules = () => {
+// Cart Validation Rules
+const cartValidationRules = () => {
   return [
     body('productId', 'productId must be numeric with max digits of 15')
       .isNumeric()
@@ -16,7 +16,27 @@ const brandValidationRules = () => {
   ];
 };
 
+// Cart Validation optional Rules
+const cartOptionalRules = () => {
+  return [
+    body('productId', 'productId must be numeric with max digits of 15')
+      .optional()
+      .isNumeric()
+      .notEmpty()
+      .isLength({ max: 15 }),
+    body('quantity', 'quantity must be a numeric attribute')
+      .optional()
+      .isNumeric(),
+    body('userId', 'User Id must be numeric with max limit of 15 digits')
+      .optional()
+      .isNumeric()
+      .notEmpty()
+      .isLength({ max: 15 }),
+  ];
+};
+
 // exports
 module.exports = {
-  rules: brandValidationRules,
+  rules: cartValidationRules,
+  optional: cartOptionalRules,
 };
