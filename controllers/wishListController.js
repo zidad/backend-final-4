@@ -1,7 +1,173 @@
 // Import necessary modules and dependencies
-const { WishList, WishListItem } = require('../models');
+const { WishList, WishListItem, User } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
+
+
+/**
+ * Fetch the user cart based on the authorized user
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
+const fetchWishList = asyncWrapper(async (req, res, next) => {
+    const userId = req.body.userId; // Changed later to fetch from the jwt token  // origin
+    // const userId = req.params.id; // Changed later to fetch from the jwt token
+
+    // logging the process
+    console.log('Fetching wish list from userId:' + userId);
+
+    // Fetching the WishList based on the user
+    const wishList = await WishList.findAll({
+        where: {
+            userId: userId,
+        },
+        include: WishListItem,
+    });
+
+    // If the cart is not found return error
+    if (!wishList) {
+        console.log('Error Fetching wish list from userId:' + userId);
+        return next(createCustomError(`Invalid User`, 403));
+    }
+
+    // The wish list is Fetched and returned in the response
+    console.log(`Fetching wish list from userId(${userId}) Successfully`);
+    return res.status(200).json({
+        success: true,
+        message: `Wish list successfully Fetched`,
+        data: wishList,
+    });
+});
+
+/**
+ * Add or update a product in the user's wish list.
+ * If wish list doesn't exist, create a new wish list.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
+const addItemToWishList = asyncWrapper(async (req, res) => {
+    const { userId, productId } = req.body;
+
+    if (!userId || !productId) {
+        return res.status(400).json({ error: 'userId and productId are required in the request body' });
+    }
+
+    // Fetch the user from the user id from the body
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    // Get his wishlist (optional)
+    let wishList = await user.getWishList();
+
+    // If the user doesn't have a wishlist, create a new one
+    if (!wishList) {
+        wishList = await WishList.create();
+        await user.setWishList(wishList);
+    }
+
+    // Check if the product already exists in the wish list
+    const existProduct = await WishListItem.findOne({
+        where: {
+            wishListId: wishList ? wishList.id : null,
+            productId: productId,
+        },
+    });
+
+    // If the product already exists, return a response
+    if (existProduct) {
+        return res.status(200).json({ message: 'Product already exists in wishlist', wishListItem: existProduct });
+    }
+
+    // Create a new WishList item and pass the userId and productId for it
+    const wishListItem = await WishListItem.create({
+        wishListId: wishList ? wishList.id : null,
+        productId: productId,
+    });
+
+    return res.status(200).json({ message: 'Product added to wishlist', wishListItem });
+});
+
+
+/**
+ * Remove a product from the user's wish list.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
+const removeItemFromWishList = asyncWrapper(async (req, res) => {
+    const { userId, productId } = req.body;
+
+    if (!userId || !productId) {
+        return res.status(400).json({ error: 'userId and productId are required in the request body' });
+    }
+
+    // Fetch the user from the user id from the body
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    // Get his wishlist (optional)
+    const wishList = await user.getWishList();
+
+    // Check if the product exists in the wish list
+    const existingWishListItem = await WishListItem.findOne({
+        where: {
+            wishListId: wishList ? wishList.id : null,
+            productId: productId,
+        },
+    });
+
+    // If the product doesn't exist, return a response
+    if (!existingWishListItem) {
+        return res.status(404).json({ error: 'Product not found in wishlist' });
+    }
+
+    // Remove the product from the wishlist
+    await existingWishListItem.destroy();
+
+    return res.status(200).json({ message: 'Product removed from wishlist' });
+});
+
+/**
+ * Delete all products in the wish list.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
+const deleteWishListProducts = asyncWrapper(async (req, res) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ error: 'userId is required in the request body' });
+    }
+
+    // Fetch the user from the user id from the body
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    // Get his wishlist (optional)
+    const wishList = await user.getWishList();
+
+    // If the wishlist exists, delete all its products
+    if (wishList) {
+        await WishListItem.destroy({
+            where: {
+                wishListId: wishList.id,
+            },
+        });
+
+        return res.status(200).json({ message: 'All products in wishlist deleted successfully' });
+    }
+
+    return res.status(404).json({ error: 'Wishlist not found' });
+});
 
 /**
  * Creates a new wish list in the database.
@@ -23,141 +189,6 @@ const createWishList = asyncWrapper(async (req, res) => {
         success: true,
         message: 'Wish List created successfully',
         data: wishList,
-    });
-});
-
-/**
- * Retrieves all wish lists from the database.
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- */
-const getWishLists = asyncWrapper(async (req, res) => {
-    // Fetch all wish lists from the database
-    const wishLists = await WishList.findAll();
-
-    // Log the successful retrieval and send a response with the wish lists
-    console.log('Wish Lists are fetched');
-    res.status(200).json({
-        success: true,
-        message: 'Wish list fetched successfully',
-        data: wishLists,
-    });
-});
-
-// /**
-//  * Retrieves a single wish list by ID from the database.
-//  * @param {Object} req - Express request object.
-//  * @param {Object} res - Express response object.
-//  * @param {function} next - Express next middleware function.
-//  */
-// const getWishList = asyncWrapper(async (req, res, next) => {
-//   // Extract wishList ID from request parameters
-//   const id = Number(req.params.id);
-
-//   // Find the wish list by ID in the database
-//   const wishList = await WishList.findByPk(id);
-
-//   // If the wish list is found, send a success response; otherwise, invoke the next middleware with a custom error
-//   if (wishList) {
-//     return res.status(200).json({
-//       success: true,
-//       message: 'Wish list fetched successfully',
-//       data: wishList,
-//     });
-//   } else {
-//     return next(createCustomError(`No wish list with id: ${id} is found`, 404));
-//   }
-// });
-
-/**
- * Retrieves a single wish list by ID from the database along with its wish list items
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {function} next - Express next middleware function.
- */
-const getWishList = asyncWrapper(async (req, res, next) => {
-    // Extract wish list ID from request parameters
-    const id = Number(req.params.id);
-
-    // Find the wish list by ID in the database
-    const wishList = await WishList.findByPk(id);
-
-    // If the wish list is found, fetch all wish list items associated with the wishList
-    if (wishList) {
-        const wishListItem = await WishListItem.findAll({ where: { wishListId: id } });
-
-        // Send a response with wish list and associated wish list items
-        return res.status(200).json({
-            success: true,
-            message: 'Wish List and wish list items fetched successfully',
-            data: { wishList, wishListItem },
-        });
-    } else {
-        // If the wish list is not found, invoke the next middleware with a custom error
-        return next(createCustomError(`No wish list with id: ${id} is found`, 404));
-    }
-});
-
-
-/**
- * Updates a wish list by ID in the database.
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {function} next - Express next middleware function.
- */
-const updateWishList = asyncWrapper(async (req, res, next) => {
-    // Extract wish list ID from request parameters
-    const id = Number(req.params.id);
-
-    // Destructure wish list properties from the request body
-    const {
-        userId
-    } = req.body;
-
-    // Update the wish list in the database
-    const [updatedRowCount] = await WishList.update(
-        {
-            userId
-        },
-        { where: { id } }
-    );
-
-    // If no rows are updated, invoke the next middleware with a custom error; otherwise, fetch the updated wish list and send a success response
-    if (updatedRowCount === 0) {
-        return next(createCustomError(`No wish list items with id: ${id} is found`, 404));
-    }
-
-    const updatedWishList = await WishList.findByPk(id);
-    console.log('Updated wish list: ', updatedWishList?.title);
-    res.status(200).json({
-        success: true,
-        message: 'Wish list updated successfully',
-        data: updatedWishList,
-    });
-});
-
-/**
- * Deletes a wish list by ID from the database.
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {function} next - Express next middleware function.
- */
-const deleteWishList = asyncWrapper(async (req, res, next) => {
-    // Extract wish list ID from request parameters
-    const id = Number(req.params.id);
-
-    // Delete the wish list from the database
-    const deletedRowCount = await WishList.destroy({ where: { id } });
-
-    // If no rows are deleted, invoke the next middleware with a custom error; otherwise, log the deletion and send a success response
-    if (deletedRowCount === 0) {
-        return next(createCustomError(`No wish list with id: ${id} is found`, 404));
-    }
-
-    console.log('Deleted wish list: ', deletedRowCount);
-    res.status(200).json({
-        success: true,
-        message: 'Wish List deleted successfully',
     });
 });
 
@@ -192,10 +223,10 @@ const getWishListItems = asyncWrapper(async (req, res, next) => {
 
 // Export the API functions
 module.exports = {
+    fetchWishList,
+    addItemToWishList,
+    removeItemFromWishList,
+    deleteWishListProducts,
     createWishList,
-    getWishLists,
-    getWishList,
-    updateWishList,
-    deleteWishList,
-    getWishListItems
+    getWishListItems,
 };
