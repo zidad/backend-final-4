@@ -41,23 +41,22 @@ const fetchWishList = asyncWrapper(async (req, res, next) => {
 });
 
 /**
- * Add or update a product in the user's wish list.
- * If wish list doesn't exist, create a new wish list.
+ * Add a product in the user's wish list.
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const addItemToWishList = asyncWrapper(async (req, res) => {
+const addItemToWishList = asyncWrapper(async (req, res, next) => {
     const { userId, productId } = req.body;
 
     if (!userId || !productId) {
-        return res.status(400).json({ error: 'userId and productId are required in the request body' });
+        return next(createCustomError('userId and productId are required in the request body', 400));
     }
 
     // Fetch the user from the user id from the body
     const user = await User.findByPk(userId);
 
     if (!user) {
-        throw new Error('User not found');
+        return next(createCustomError('User not found', 404));
     }
 
     // Get his wishlist (optional)
@@ -79,7 +78,7 @@ const addItemToWishList = asyncWrapper(async (req, res) => {
 
     // If the product already exists, return a response
     if (existProduct) {
-        return res.status(200).json({ message: 'Product already exists in wishlist', wishListItem: existProduct });
+        return next(createCustomError('Product already exists in wishlist', 200));
     }
 
     // Create a new WishList item and pass the userId and productId for it
@@ -88,7 +87,11 @@ const addItemToWishList = asyncWrapper(async (req, res) => {
         productId: productId,
     });
 
-    return res.status(200).json({ message: 'Product added to wishlist', wishListItem });
+    return res.status(200).json({
+        success: true,
+        message: 'Product added to wishlist',
+        data: wishListItem,
+    });
 });
 
 
@@ -97,18 +100,18 @@ const addItemToWishList = asyncWrapper(async (req, res) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const removeItemFromWishList = asyncWrapper(async (req, res) => {
+const removeItemFromWishList = asyncWrapper(async (req, res, next) => {
     const { userId, productId } = req.body;
 
     if (!userId || !productId) {
-        return res.status(400).json({ error: 'userId and productId are required in the request body' });
+        return next(createCustomError('userId and productId are required in the request body', 400));
     }
 
     // Fetch the user from the user id from the body
     const user = await User.findByPk(userId);
 
     if (!user) {
-        throw new Error('User not found');
+        return next(createCustomError('User not found', 404));
     }
 
     // Get his wishlist (optional)
@@ -124,13 +127,17 @@ const removeItemFromWishList = asyncWrapper(async (req, res) => {
 
     // If the product doesn't exist, return a response
     if (!existingWishListItem) {
-        return res.status(404).json({ error: 'Product not found in wishlist' });
+        return next(createCustomError('Product not found in wishlist', 404));
     }
 
     // Remove the product from the wishlist
     await existingWishListItem.destroy();
 
-    return res.status(200).json({ message: 'Product removed from wishlist' });
+    return res.status(200).json({
+        success: true,
+        message: 'Product removed from wishlist',
+        // data: wishList,
+    });
 });
 
 /**
@@ -138,18 +145,18 @@ const removeItemFromWishList = asyncWrapper(async (req, res) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const deleteWishListProducts = asyncWrapper(async (req, res) => {
+const deleteWishListProducts = asyncWrapper(async (req, res, next) => {
     const { userId } = req.body;
 
     if (!userId) {
-        return res.status(400).json({ error: 'userId is required in the request body' });
+        return next(createCustomError('userId is required in the request body', 400));
     }
 
     // Fetch the user from the user id from the body
     const user = await User.findByPk(userId);
 
     if (!user) {
-        throw new Error('User not found');
+        return next(createCustomError('User not found', 404));
     }
 
     // Get his wishlist (optional)
@@ -163,10 +170,15 @@ const deleteWishListProducts = asyncWrapper(async (req, res) => {
             },
         });
 
-        return res.status(200).json({ message: 'All products in wishlist deleted successfully' });
+
+        return res.status(200).json({
+            success: true,
+            message: 'All products in wishlist deleted successfully',
+            // data: wishList,
+        });
     }
 
-    return res.status(404).json({ error: 'Wishlist not found' });
+    return next(createCustomError('Wishlist not found', 404));
 });
 
 /**
