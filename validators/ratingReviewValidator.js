@@ -55,5 +55,5 @@ const reviewOptionalRules = () => {
 // exports
 module.exports = {
   rules: reviewValidationRules,
-  optional: reviewOptionalRules,
+  optionalRules: reviewOptionalRules,
 };

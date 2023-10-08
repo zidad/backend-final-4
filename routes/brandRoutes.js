@@ -14,7 +14,7 @@ const {
 router.get('/', getBrands);
 router.get('/:id', getBrand);
 router.post('/', brandValidator.rules(), validate, addBrand);
-router.put('/:id', updateBrand);
+router.put('/:id',brandValidator.optionalRules(), validate, updateBrand);
 router.delete('/:id', deleteBrand);
 
 module.exports = router;

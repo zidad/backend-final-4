@@ -110,5 +110,5 @@ const userOptionalRules = () => {
 // exports
 module.exports = {
   rules: userValidationRules,
-  optional: userOptionalRules,
+  optionalRules: userOptionalRules,
 };

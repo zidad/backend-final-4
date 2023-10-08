@@ -16,7 +16,7 @@ const {
 router.get('/', getProducts);
 router.get('/:id', getProduct);
 router.post('/', productValidator.rules(), validate, createProduct);
-router.put('/:id', updateProduct);
+router.put('/:id', productValidator.optionalRules(), validate, updateProduct);
 router.delete('/:id', deleteProduct);
 router.get('/v1/search', searchProducts);
 router.get('/ratingreviews/:id', getProductRatingReviews);

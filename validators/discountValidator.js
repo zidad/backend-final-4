@@ -38,5 +38,5 @@ const discountOptionalRules = () => {
 // exports
 module.exports = {
   rules: discountValidationRules,
-  optional: discountOptionalRules,
+  optionalRules: discountOptionalRules,
 };

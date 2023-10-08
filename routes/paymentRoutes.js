@@ -14,7 +14,7 @@ const {
 router.get('/', fetchPayments);
 router.post('/', paymentValidator.rules(), validate, createPayment);
 router.get('/:id', getPayment);
-router.put('/:id', updatePayment);
+router.put('/:id', paymentValidator.optionalRules(), validate, updatePayment);
 router.delete('/:id', deletePayment);
 
 module.exports = router;

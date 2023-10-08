@@ -43,5 +43,5 @@ const paymentOptionalRules = () => {
 // exports
 module.exports = {
   rules: paymentValidationRules,
-  optional: paymentOptionalRules,
+  optionalRules: paymentOptionalRules,
 };

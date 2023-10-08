@@ -14,7 +14,7 @@ const {
 router.get('/', getAddresses);
 router.get('/:id', getAddress);
 router.post('/', addressValidator.rules(), validate, createAddress);
-router.put('/:id', updateAddress);
+router.put('/:id',addressValidator.optionalRules(), validate, updateAddress);
 router.delete('/:id', deleteAddress);
 
 module.exports = router;

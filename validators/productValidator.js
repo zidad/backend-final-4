@@ -105,5 +105,5 @@ const productOptionalRules = () => {
 // exports
 module.exports = {
   rules: productValidationRules,
-  optional: productOptionalRules,
+  optionalRules: productOptionalRules,
 };

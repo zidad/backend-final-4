@@ -36,5 +36,5 @@ const categoryOptionalRules = () => {
 // exports
 module.exports = {
   rules: categoryValidationRules,
-  optional: categoryOptionalRules,
+  optionalRules: categoryOptionalRules,
 };
