@@ -24,9 +24,7 @@ const WishList = sequelize.define('wishList', {
 });
 
 // Associations
-User.hasOne(WishList, {
-    foreignKey: 'userId',
-});
-WishList.belongsTo(User);
+User.hasOne(WishList, { foreignKey: 'userId' });
+WishList.belongsTo(User, { onDelete: 'cascade', hooks: true });
 
 module.exports = WishList;

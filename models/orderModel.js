@@ -102,31 +102,17 @@ const Order = sequelize.define(
 );
 
 //Order Associations
-Address.hasOne(Order, {
-  foreignKey: 'addressId',
-});
-Order.belongsTo(Address);
+Address.hasOne(Order, { foreignKey: 'addressId' });
+Order.belongsTo(Address, { onDelete: 'cascade', hooks: true });
 
-User.hasMany(Order, {
-  foreignKeys: 'userId',
-});
-Order.belongsTo(User, {
-  foreignKeys: 'userId',
-});
+User.hasMany(Order, { foreignKeys: 'userId' });
+Order.belongsTo(User, { onDelete: 'cascade', hooks: true }, { foreignKeys: 'userId' });
 
-Cart.hasMany(Order, {
-  foreignKeys: 'cartId',
-});
-Order.belongsTo(Cart, {
-  foreignKeys: 'cartId',
-});
+Cart.hasMany(Order, { foreignKeys: 'cartId' });
+Order.belongsTo(Cart, { onDelete: 'cascade', hooks: true }, { foreignKeys: 'cartId' });
 
-Payment.hasMany(Order, {
-  foreignKeys: 'paymentId',
-});
-Order.belongsTo(Payment, {
-  foreignKeys: 'paymentId',
-});
+Payment.hasMany(Order, { foreignKeys: 'paymentId' });
+Order.belongsTo(Payment, { onDelete: 'cascade', hooks: true }, { foreignKeys: 'paymentId' });
 
 // exports
 module.exports = Order;

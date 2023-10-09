@@ -124,13 +124,13 @@ const Product = sequelize.define('product',
 );
 
 // Associations
-Product.belongsTo(Category, { foreignKey: 'categoryId' });
+Product.belongsTo(Category, { onDelete: 'cascade', hooks: true }, { foreignKey: 'categoryId' });
 Category.hasMany(Product, { foreignKey: 'categoryId' });
 
-Product.belongsTo(Brand, { foreignKey: 'brandId' });
+Product.belongsTo(Brand, { onDelete: 'cascade', hooks: true }, { foreignKey: 'brandId' });
 Brand.hasMany(Product, { foreignKey: 'brandId' });
 
-Product.belongsTo(Discount, { foreignKey: 'discountId' });
+Product.belongsTo(Discount, { onDelete: 'cascade', hooks: true }, { foreignKey: 'discountId' });
 Discount.hasMany(Product, { foreignKey: 'discountId' });
 
 
