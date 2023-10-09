@@ -60,7 +60,7 @@ const Address = sequelize.define('address', {
 });
 
 // Associations
-Address.belongsTo(User, { foreignKey: 'userId' });
+Address.belongsTo(User, { onDelete: 'cascade', hooks: true }, { foreignKey: 'userId' });
 User.hasMany(Address, { foreignKey: 'userId' });
 
 

@@ -39,7 +39,7 @@ const Cart = sequelize.define('cart',
 
 // Cart Associations
 User.hasOne(Cart, { foreignKey: 'userId' });
-Cart.belongsTo(User);
+Cart.belongsTo(User, { onDelete: 'cascade', hooks: true });
 
 // exports
 module.exports = Cart;

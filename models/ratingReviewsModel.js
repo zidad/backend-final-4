@@ -69,10 +69,10 @@ const RatingReview = sequelize.define('ratingReview', {
 });
 
 // Associations
-RatingReview.belongsTo(User, { foreignKey: 'userId' });
+RatingReview.belongsTo(User, { onDelete: 'cascade', hooks: true }, { foreignKey: 'userId' });
 User.hasMany(RatingReview, { foreignKey: 'userId' });
 
-RatingReview.belongsTo(Product, { foreignKey: 'productId' });
+RatingReview.belongsTo(Product, { onDelete: 'cascade', hooks: true }, { foreignKey: 'productId' });
 Product.hasMany(RatingReview, { foreignKey: 'productId' });
 
 module.exports = RatingReview;
