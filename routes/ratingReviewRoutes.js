@@ -15,7 +15,12 @@ const {
 router.get('/', getRatingReviews);
 router.get('/:id', getRatingReview);
 router.post('/', ratingReviewsValidator.rules(), validate, createRatingReview);
-router.put('/:id', updateRatingReview);
+router.put(
+  '/:id',
+  ratingReviewsValidator.optionalRules(),
+  validate,
+  updateRatingReview
+);
 router.delete('/:id', deleteRatingReview);
 
 module.exports = router;

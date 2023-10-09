@@ -11,8 +11,8 @@ const {
 } = require('../controllers/discountController');
 
 router.get('/:id', getDiscount);
-router.post('/',discountValidator.rules(), validate, addDiscount);
-router.put('/:id', updateDiscount);
+router.post('/', discountValidator.rules(), validate, addDiscount);
+router.put('/:id', discountValidator.optionalRules(), validate, updateDiscount);
 router.delete('/:id', deleteDiscount);
 
 module.exports = router;

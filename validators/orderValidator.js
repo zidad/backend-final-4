@@ -1,7 +1,7 @@
 // imports
 const { body } = require('express-validator');
 
-// Address Validation Rules
+// Order Validation Rules
 const orderValidationRules = () => {
   return [
     body('userId', 'User Id must be numeric with max limit of 15 digits')

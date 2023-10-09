@@ -17,7 +17,7 @@ const {
 router.get('/', getUsers);
 router.get('/:id', getUser);
 router.post('/', userValidator.rules(), validate, createUser);
-router.put('/:id', updateUser);
+router.put('/:id', userValidator.optionalRules(), validate, updateUser);
 router.delete('/:id', deleteUser);
 router.get('/addresses/:id', getUserAddresses);
 router.get('/ratingreviews/:id', getUserRatingReviews);
