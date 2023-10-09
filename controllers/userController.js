@@ -1,5 +1,5 @@
 // Import necessary modules and dependencies
-const { Cart, User, Address, RatingReview } = require('../models');
+const { Cart, WishList, User, Address, RatingReview } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 
@@ -52,6 +52,15 @@ const createUser = asyncWrapper(async (req, res, next) => {
         userId: user.id,
       });
     }
+
+    // Create the wishlist associated with the user.
+    const wishlist = await WishList.findByPk(user.id);
+    if (!wishlist) {
+      await WishList.create({
+        userId: user.id,
+      });
+    }
+
     return res.status(201).json({
       success: true,
       message: 'User created successfully',
