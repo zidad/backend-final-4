@@ -4,6 +4,9 @@ const app = express();
 
 // Middleware Routes
 const { notFound, errorHandler } = require('./middleware');
+const register = require('./utils/api/register');
+const login = require('./utils/api/login');
+
 
 const {
   addressRoutes,
@@ -24,6 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Routes
+app.use(register);
+app.use(login);
 app.use('/api/users', userRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/products', productRoutes);

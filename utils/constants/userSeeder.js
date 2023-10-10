@@ -6,7 +6,8 @@ module.exports = [
         'mobile': '9876543210',
         'dateOfBirth': '1985-05-15',
         'password': 'strongpassword',
-        'imageUrl': 'https://wallpaperaccess.com/full/4723250.jpg'
+        'imageUrl': 'https://wallpaperaccess.com/full/4723250.jpg',
+        'role': 'admin'
     },
     {
         'firstName': 'John',
@@ -15,7 +16,8 @@ module.exports = [
         'mobile': '012345678',
         'dateOfBirth': '1990-03-28',
         'password': 'strongpassword',
-        'imageUrl': 'https://wallpaperaccess.com/full/4723250.jpg'
+        'imageUrl': 'https://wallpaperaccess.com/full/4723250.jpg',
+        'role': 'customer'
     },
     {
         'firstName': 'Sara',
@@ -24,6 +26,7 @@ module.exports = [
         'mobile': '123987456',
         'dateOfBirth': '1995-11-19',
         'password': 'strongpassword',
-        'imageUrl': 'https://wallpaperaccess.com/full/4723250.jpg'
+        'imageUrl': 'https://wallpaperaccess.com/full/4723250.jpg',
+        'role': 'customer'
     },
 ];
