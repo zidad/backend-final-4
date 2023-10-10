@@ -36,8 +36,7 @@ const createProduct = asyncWrapper(async (req, res, next) => {
       categoryId,
       brandId,
       // discountId,
-
-    }
+    },
   });
 
   if (existProduct) {
@@ -73,8 +72,23 @@ const createProduct = asyncWrapper(async (req, res, next) => {
  * @param {Object} res - Express response object.
  */
 const getProducts = asyncWrapper(async (req, res) => {
+  // Extract request query parameters
+  const newArrival = req.query.newArrival
+    ? JSON.parse(req.query.newArrival)
+    : false;
+
+  // where clause if the newArrival exists
+  let whereClause = {};
+  if (newArrival) {
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    whereClause.createdAt = {
+      [Op.gte]: threeMonthsAgo,
+    };
+  }
+
   // Fetch all products from the database
-  const products = await Product.findAll();
+  const products = await Product.findAll({ where: whereClause });
 
   // Log the successful retrieval and send a response with the products
   console.log('Products are fetched');
