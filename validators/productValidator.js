@@ -107,7 +107,7 @@ const productQueryRules = () => {
   return [
     query('newArrival', 'newArrival query must be boolean')
       .optional()
-      .default('false')
+      .default(false)
       .isBoolean(),
   ];
 };
