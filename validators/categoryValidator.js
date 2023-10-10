@@ -36,7 +36,10 @@ const categoryOptionalRules = () => {
 // Category  query Validation rules
 const categoryQueryRules = () => {
   return [
-    query('featured', 'featured query must be boolean').optional().isBoolean(),
+    query('featured', 'featured query must be boolean')
+      .optional()
+      .default(false)
+      .isBoolean(),
   ];
 };
 
