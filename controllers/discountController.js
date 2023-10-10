@@ -1,6 +1,25 @@
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const Discount = require('../models/discountModel');
+const { Product } = require('../models');
+
+/**
+ * Fetches all discounts from the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
+const getDiscounts = asyncWrapper(async (req, res, next) => {
+  // Find all discounts in the database
+  const discounts = await Discount.findAll();
+
+  // Send a success response with the fetched discounts
+  res.status(200).json({
+    success: true,
+    message: `Discounts successfully fetched`,
+    data: discounts,
+  });
+});
 
 /**
  * Fetches a discount by ID from the database.
@@ -23,11 +42,16 @@ const getDiscount = asyncWrapper(async (req, res, next) => {
 
   console.log(`Discount with ID ${discountId} successfully fetched`);
 
+  // If the discount is found, fetch all products associated with the discount
+  const products = await Product.findAll({
+    where: { discountId: discountId },
+  });
+
   // Send a success response with the fetched discount
   res.status(200).json({
     success: true,
     message: `Discount successfully fetched`,
-    data: discount,
+    data: { discount, products },
   });
 });
 
@@ -119,6 +143,7 @@ const deleteDiscount = asyncWrapper(async (req, res) => {
 });
 
 module.exports = {
+  getDiscounts,
   getDiscount,
   addDiscount,
   updateDiscount,
