@@ -9,8 +9,19 @@ const { Category, Product } = require('../models');
  * @param {function} next - Express next middleware function.
  */
 const getCategories = asyncWrapper(async (req, res, next) => {
+  // Extract the request query parameters
+  const featured = req.query.featured ? JSON.parse(req.query.featured) : false;
+
+  // Where clause if the featured exists
+  let whereClause = {};
+  if (featured) {
+    whereClause.isFeatured = featured;
+  }
+
   // Fetch all categories from the database
-  const categories = await Category.findAll();
+  const categories = await Category.findAll({
+    where: whereClause,
+  });
 
   // If no categories are found, log and return a custom error
   if (!categories) {
@@ -79,7 +90,7 @@ const getCategory = asyncWrapper(async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: `Category and products successfully fetched`,
-      data: { category, products }
+      data: { category, products },
     });
   } else {
     // If the category is not found, invoke the next middleware with a custom error
