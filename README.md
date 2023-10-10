@@ -105,7 +105,8 @@ To run this project locally, follow these steps:
 1. git clone https://github.com/JSD-0723/backend-final-4.git
 2. cd backend-final-4
 3. npm install
-4. npm start
+4. npx sequelize-cli db:seed:all (to fill the database with data)
+5. npm start
 ```
 
 The application will be accessible at `http://localhost:5000` in your web browser.

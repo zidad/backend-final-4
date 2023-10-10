@@ -34,11 +34,11 @@ const WishListItem = sequelize.define('wishListItem', {
 });
 
 // Associations
+WishListItem.belongsTo(WishList, { onDelete: 'cascade', hooks: true }, { foreignKey: 'wishListId' });
 WishList.hasMany(WishListItem, { foreignKey: 'wishListId' });
-WishListItem.belongsTo(WishList, { foreignKey: 'wishListId' });
 
+WishListItem.belongsTo(Product, { onDelete: 'cascade', hooks: true }, { foreignKey: 'productId' });
 Product.hasMany(WishListItem, { foreignKey: 'productId' });
-WishListItem.belongsTo(Product, { foreignKey: 'productId' });
 
 
 module.exports = WishListItem;

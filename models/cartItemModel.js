@@ -58,17 +58,11 @@ const CartItem = sequelize.define('cartItem', {
 });
 
 //Associations
-Cart.hasMany(CartItem, {
-  foreignKeys: 'cartId'
-});
-CartItem.belongsTo(Cart, {
-  foreignKeys: 'cartId'
-});
+Cart.hasMany(CartItem, { foreignKeys: 'cartId' });
+CartItem.belongsTo(Cart, { onDelete: 'cascade', hooks: true }, { foreignKeys: 'cartId' });
 
-Product.hasMany(CartItem, {
-  foreignKeys: 'productId'
-});
-CartItem.belongsTo(Product);
+Product.hasMany(CartItem, { foreignKeys: 'productId' });
+CartItem.belongsTo(Product, { onDelete: 'cascade', hooks: true });
 
 //exports
 module.exports = CartItem;

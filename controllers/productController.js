@@ -9,7 +9,7 @@ const { Op } = require('sequelize');
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const createProduct = asyncWrapper(async (req, res) => {
+const createProduct = asyncWrapper(async (req, res, next) => {
   // Destructure required properties from the request body
   const {
     title,
@@ -23,6 +23,25 @@ const createProduct = asyncWrapper(async (req, res) => {
     brandId,
     discountId,
   } = req.body;
+
+  const existProduct = await Product.findOne({
+    where: {
+      title,
+      description,
+      price,
+      // availableInStock,
+      // totalRating,
+      // ratingCount,
+      // imageUrl,
+      categoryId,
+      brandId,
+      // discountId,
+    },
+  });
+
+  if (existProduct) {
+    return next(createCustomError('Product already exists', 200));
+  }
 
   // Create a new product in the database
   const product = await Product.create({
@@ -53,8 +72,23 @@ const createProduct = asyncWrapper(async (req, res) => {
  * @param {Object} res - Express response object.
  */
 const getProducts = asyncWrapper(async (req, res) => {
+  // Extract request query parameters
+  const newArrival = req.query.newArrival
+    ? JSON.parse(req.query.newArrival)
+    : false;
+
+  // where clause if the newArrival exists
+  let whereClause = {};
+  if (newArrival) {
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    whereClause.createdAt = {
+      [Op.gte]: threeMonthsAgo,
+    };
+  }
+
   // Fetch all products from the database
-  const products = await Product.findAll();
+  const products = await Product.findAll({ where: whereClause });
 
   // Log the successful retrieval and send a response with the products
   console.log('Products are fetched');

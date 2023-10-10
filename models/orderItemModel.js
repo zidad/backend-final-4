@@ -61,19 +61,11 @@ const OrderItem = sequelize.define('orderItem',
 );
 
 //Associations
-Order.hasMany(OrderItem, {
-  foreignKeys: 'orderId',
-});
-OrderItem.belongsTo(Order, {
-  foreignKeys: 'orderId',
-});
+Order.hasMany(OrderItem, { foreignKeys: 'orderId', });
+OrderItem.belongsTo(Order, { onDelete: 'cascade', hooks: true }, { foreignKeys: 'orderId' });
 
-Product.hasMany(OrderItem, {
-  foreignKeys: 'productId',
-});
-OrderItem.belongsTo(Product, {
-  foreignKeys: 'productId',
-});
+Product.hasMany(OrderItem, { foreignKeys: 'productId', });
+OrderItem.belongsTo(Product, { onDelete: 'cascade', hooks: true }, { foreignKeys: 'productId' });
 
 //exports
 module.exports = OrderItem;

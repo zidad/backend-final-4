@@ -62,12 +62,6 @@ const addItemToWishList = asyncWrapper(async (req, res, next) => {
     // Get his wishlist (optional)
     let wishList = await user.getWishList();
 
-    // If the user doesn't have a wishlist, create a new one
-    if (!wishList) {
-        wishList = await WishList.create();
-        await user.setWishList(wishList);
-    }
-
     // Check if the product already exists in the wish list
     const existProduct = await WishListItem.findOne({
         where: {
