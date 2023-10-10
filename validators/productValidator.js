@@ -1,5 +1,5 @@
 // imports
-const { body } = require('express-validator');
+const { body, query } = require('express-validator');
 
 // Product Validation Rules
 const productValidationRules = () => {
@@ -102,8 +102,19 @@ const productOptionalRules = () => {
   ];
 };
 
+// Category  query Validation rules
+const productQueryRules = () => {
+  return [
+    query('newArrival', 'newArrival query must be boolean')
+      .optional()
+      .default('false')
+      .isBoolean(),
+  ];
+};
+
 // exports
 module.exports = {
   rules: productValidationRules,
   optionalRules: productOptionalRules,
+  queryRules: productQueryRules,
 };
