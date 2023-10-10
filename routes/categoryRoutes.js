@@ -11,10 +11,10 @@ const {
   deleteCategory,
 } = require('../controllers/categoryController');
 
-router.get('/', getCategories);
+router.get('/', categoryValidator.queryRules(), validate, getCategories);
 router.get('/:id', getCategory);
-router.post('/', categoryValidator.rules(), validate ,addCategory);
-router.put('/:id',categoryValidator.optionalRules(), validate, updateCategory);
+router.post('/', categoryValidator.rules(), validate, addCategory);
+router.put('/:id', categoryValidator.optionalRules(), validate, updateCategory);
 router.delete('/:id', deleteCategory);
 
 module.exports = router;

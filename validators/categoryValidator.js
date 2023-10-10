@@ -1,5 +1,5 @@
 // imports
-const { body } = require('express-validator');
+const { body, query } = require('express-validator');
 
 // Category Validation Rules
 const categoryValidationRules = () => {
@@ -33,8 +33,16 @@ const categoryOptionalRules = () => {
   ];
 };
 
+// Category  query Validation rules
+const categoryQueryRules = () => {
+  return [
+    query('featured', 'featured query must be boolean').optional().isBoolean(),
+  ];
+};
+
 // exports
 module.exports = {
   rules: categoryValidationRules,
   optionalRules: categoryOptionalRules,
+  queryRules: categoryQueryRules,
 };
