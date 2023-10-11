@@ -105,6 +105,7 @@ const productOptionalRules = () => {
 // Category  query Validation rules
 const productQueryRules = () => {
   return [
+    query('page', 'page query must be boolean').default(1).isInt(),
     query('newArrival', 'newArrival query must be boolean')
       .optional()
       .default(false)
