@@ -12,7 +12,7 @@ const {
 } = require('../controllers/categoryController');
 
 router.get('/', categoryValidator.queryRules(), validate, getCategories);
-router.get('/:id', getCategory);
+router.get('/:id', categoryValidator.queryRules(), validate, getCategory);
 router.post('/', categoryValidator.rules(), validate, addCategory);
 router.put('/:id', categoryValidator.optionalRules(), validate, updateCategory);
 router.delete('/:id', deleteCategory);
