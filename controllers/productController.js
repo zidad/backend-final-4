@@ -77,6 +77,10 @@ const getProducts = asyncWrapper(async (req, res) => {
     ? JSON.parse(req.query.newArrival)
     : false;
 
+  const handpicked = req.query.handpicked
+    ? JSON.parse(req.query.handpicked)
+    : false;
+
   // where clause if the newArrival exists
   let whereClause = {};
   if (newArrival) {
@@ -85,6 +89,10 @@ const getProducts = asyncWrapper(async (req, res) => {
     whereClause.createdAt = {
       [Op.gte]: threeMonthsAgo,
     };
+  }
+  if (handpicked) {
+    whereClause.totalRating = { [Op.gte]: 4.5 };
+    whereClause.price = { [Op.lte]: 100 };
   }
 
   // Fetch all products from the database
