@@ -1,45 +1,47 @@
-const { Cart, Product, OrderItem } = require('../models');
+const { Cart, Product, OrderItem, CartItem } = require('../models');
 
 /**
  * Update the availableInStock value for products in the cart.
  * @param {number} cartId - ID of the cart to update.
  */
 const updateProductStockInCart = async (cartId) => {
-  try {
-    // Fetch cart items for the given cartId
-    const cart = await Cart.findByPk(cartId, { include: Product });
+    try {
+        // Find all cart items associated with the specified cart and include only the necessary attributes of the Product model
+        const cartItems = await CartItem.findAll({
+          where: { cartId },
+          include: [
+            {
+              model: Product,
+              attributes: ['id', 'availableInStock'], 
+            },
+          ],
+        });
 
-    if (!cart) {
-      throw new Error(`Cart with ID ${cartId} not found.`);
-    }
-
-    const cartItems = cart.products;
-
-    // Loop through cart items and update product stock
-    for (const cartItem of cartItems) {
-      const productId = cartItem.id;
-      const quantityInCart = cartItem.cartItem.quantity;
-
-      // Find the product by ID
-      const product = await Product.findByPk(productId);
-
-      if (product) {
-        // Calculate the new availableInStock value
-        const newAvailableInStock = product.availableInStock - quantityInCart;
-
-        // Update the product's availableInStock value in the database
-        await Product.update(
-          { availableInStock: newAvailableInStock },
-          { where: { id: productId } }
-        );
+        if (cartItems && cartItems.length > 0) {
+          // Loop through each cart item and update the stock for the associated product
+          for (const cartItem of cartItems) {
+            const product = cartItem.product;
+            if (product) {
+              // Calculate the updated stock based on the quantity in the cart
+              const updatedStock = product.availableInStock - cartItem.quantity;
+    
+              // Check if the updated stock is not negative
+              if (updatedStock >= 0) {
+                // Update the stock for the product
+                product.availableInStock = updatedStock;
+                await product.save(); // Save the changes to the database
+              } else {
+                // Handle the case where there is not enough stock available
+                console.log(`Not enough stock for product ${product.id}`);
+                // You can throw an error or handle this situation as needed.
+              }
+            }
+          }
+        }
+      } catch (error) {
+        // Handle any errors that may occur during the update process
+        console.error('Error updating product stock in cart:', error);
       }
-    }
-
-    console.log('Product stock in cart updated successfully.');
-  } catch (error) {
-    console.error('Error updating product stock in cart:', error);
-    // Handle the error here, such as logging or sending an error response
-  }
 };
 
 /**
@@ -47,35 +49,30 @@ const updateProductStockInCart = async (cartId) => {
  * @param {Order} order - The canceled order.
  */
 const updateProductStockOnOrderCancellation = async (order) => {
-  try {
-    // Fetch the order items (products) associated with the canceled order
-    const orderItems = await OrderItem.findAll({ where: { orderId: order.id } });
-
-    // Restore the product stock by adding the quantities back
-    for (const orderItem of orderItems) {
-      const productId = orderItem.productId;
-      const quantityInOrder = orderItem.quantity;
-
-      // Find the product by ID
-      const product = await Product.findByPk(productId);
-
-      if (product) {
-        // Calculate the new availableInStock value
-        const newAvailableInStock = product.availableInStock + quantityInOrder;
-
-        // Update the product's availableInStock value in the database
-        await Product.update(
-          { availableInStock: newAvailableInStock },
-          { where: { id: productId } }
-        );
-      }
+    try {
+        // Find all order items associated with the canceled order
+        const orderItems = await OrderItem.findAll({ where: { orderId: order.id } });
+    
+        for (const orderItem of orderItems) {
+          // Find the associated product
+          const product = await Product.findByPk(orderItem.productId);
+    
+          if (product) {
+            // Calculate the quantity to add back to the product's stock
+            const quantityToRestore = orderItem.quantity;
+    
+            // Update the product's stock
+            product.availableInStock += quantityToRestore;
+    
+            // Save the updated product to the database
+            await product.save();
+          }
+        }
+    } catch (error) {
+    // Handle any errors that may occur during the update process
+    console.error('Error updating product stock on order cancellation:', error);
     }
 
-    console.log('Product stock updated for canceled order: ', order.id);
-  } catch (error) {
-    console.error('Error updating product stock on order cancellation:', error);
-    // Handle the error here, such as logging or sending an error response
-  }
 };
 
 module.exports = {
