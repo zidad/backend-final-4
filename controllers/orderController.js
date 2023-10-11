@@ -2,6 +2,7 @@
 const { Cart, Order, OrderItem } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
+const { updateProductStockInCart, updateProductStockOnOrderCancellation } = require('../utils/updateProductStock');
 
 /**
  * Fetch the user orders based on the authorized user
@@ -62,6 +63,9 @@ const createOrder = asyncWrapper(async (req, res, next) => {
   if (cartItems.length === 0) {
     return next(createCustomError(`Can not Place order on empty cart`, 500));
   }
+
+  // Call the function to update product stock in the cart
+  await updateProductStockInCart(cartId);
 
   // updating the total price of order based on the taxes and delivery fees
   const totalPrice = Number(cart.totalPrice) + tax + deliveryFee;
@@ -171,6 +175,16 @@ const cancelOrder = asyncWrapper(async (req, res, next) => {
   // extracting body data
   const id = Number(req.params.id);
 
+  // Fetch the order
+  const order = await Order.findByPk(id);
+
+  if (!order) {
+    return next(createCustomError(`No Order with id: ${id} is found`, 404));
+  }
+
+  // Call the function to update product stock
+  await updateProductStockOnOrderCancellation(order);
+ 
   // updating the order
   const deletedRowCount = await Order.update(
     { status: 'cancelled' },
@@ -188,6 +202,7 @@ const cancelOrder = asyncWrapper(async (req, res, next) => {
     .status(200)
     .json({ success: true, message: 'Order Cancelled successfully' });
 });
+
 
 //exports
 module.exports = {

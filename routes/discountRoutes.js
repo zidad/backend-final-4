@@ -8,8 +8,10 @@ const {
   addDiscount,
   updateDiscount,
   deleteDiscount,
+  getDiscounts
 } = require('../controllers/discountController');
 
+router.get('/', getDiscounts);
 router.get('/:id', getDiscount);
 router.post('/', discountValidator.rules(), validate, addDiscount);
 router.put('/:id', discountValidator.optionalRules(), validate, updateDiscount);
