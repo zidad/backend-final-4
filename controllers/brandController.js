@@ -131,15 +131,18 @@ const updateBrand = asyncWrapper(async (req, res) => {
   const { name, imgUrl } = req.body;
 
   // Update the brand in the database
-  const updatedBrand = await Brand.update(
+  const updatedRowCount = await Brand.update(
     { name, imgUrl },
     { where: { id: brandId } }
   );
 
   // If no rows are updated, throw a custom error
-  if (updatedBrand[0] === 0) {
-    throw createCustomError(`Brand not found`, 404);
+  if (updatedRowCount === 0) {
+    return next(createCustomError(`No address with id: ${brandId} is found`, 404));
   }
+
+  const updatedBrand = await Address.findByPk(brandId);
+  console.log('Updated address: ', updatedBrand);
 
   // Send a success response with the updated brand
   res.status(200).json({
@@ -159,20 +162,19 @@ const deleteBrand = asyncWrapper(async (req, res) => {
   const brandId = req.params.id;
 
   // Delete the brand from the database
-  const deletedBrand = await Brand.destroy({
+  const deletedRowCount = await Brand.destroy({
     where: { id: brandId },
   });
 
   // If the brand is not found, throw a custom error
-  if (!deletedBrand) {
-    throw createCustomError(`Brand not found`, 404);
+  if (deletedRowCount === 0) {
+    return next(createCustomError(`No brand with id: ${brandId} is found`, 404));
   }
 
   // Send a success response after deleting the brand
   res.status(200).json({
     success: true,
     message: `Brand deleted successfully`,
-    data: deletedBrand,
   });
 });
 
