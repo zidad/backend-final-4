@@ -19,7 +19,7 @@ const {
 
 router.get('/', productValidator.queryRules(), validate, getProducts);
 router.get('/:id', getProduct);
-router.post('/', productValidator.rules(), validate, passport.authenticate('jwt', { session: false }), isAdmin, createProduct);
+router.post('/', passport.authenticate('jwt', { session: false }), isAdmin, productValidator.rules(), validate, createProduct);
 router.put('/:id', productValidator.optionalRules(), validate, updateProduct);
 router.delete('/:id', deleteProduct);
 router.get('/v1/search', searchProducts);
