@@ -13,7 +13,7 @@ const {
   getProductRatingReviews,
 } = require('../controllers/productController');
 
-router.get('/', getProducts);
+router.get('/', productValidator.queryRules(), validate, getProducts);
 router.get('/:id', getProduct);
 router.post('/', productValidator.rules(), validate, createProduct);
 router.put('/:id', productValidator.optionalRules(), validate, updateProduct);
