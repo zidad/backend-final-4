@@ -67,7 +67,7 @@ const createUser = asyncWrapper(async (req, res, next) => {
       data: user,
     });
   } else {
-    return next(createCustomError(`Email ${email} is already exist`, 400));
+    return next(createCustomError(`Email ${email} already exists`, 400));
   }
 });
 
