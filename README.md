@@ -132,7 +132,7 @@ This web application includes the following features:
 
 Please check the API documentation for more information:
 
-- [API Documentation and Routes](https://documenter.getpostman.com/view/25274258/2s9YJdWN5o)
+- [API Documentation and Routes](https://documenter.getpostman.com/view/25274258/2s9YJf1Mp2)
 
 ## Links
 
