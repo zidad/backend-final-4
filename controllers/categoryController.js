@@ -1,6 +1,7 @@
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const { Category, Product } = require('../models');
+const { Op } = require('sequelize');
 
 /**
  * Fetches all categories from the database.
@@ -78,12 +79,26 @@ const getCategory = asyncWrapper(async (req, res, next) => {
   // Extract category ID from request parameters
   const id = Number(req.params.id);
 
+  // Extract the handpicked query parameters
+  const handpicked = req.query.handpicked
+    ? JSON.parse(req.query.handpicked)
+    : false;
+
   // Find the category by ID in the database
   const category = await Category.findByPk(id);
 
-  console.log('Category: ', category?.name);
+  // Initializing the where clause
+  let whereClause = {
+    categoryId: id,
+  };
+  if (handpicked) {
+    whereClause.totalRating = { [Op.gte]: 4.5 };
+    whereClause.price = { [Op.lte]: 100 };
+  }
+
+  console.log('Fetched Category: ', category?.name);
   if (category) {
-    const products = await Product.findAll({ where: { categoryId: id } });
+    const products = await Product.findAll({ where: whereClause });
 
     console.log('Products: ', products?.name);
     // Send a response with category and associated products
