@@ -106,11 +106,21 @@ const getProducts = asyncWrapper(async (req, res) => {
     offset: offset,
   });
 
+  // Fetching the number of products and pages to return in the response
+  const productsCount = await Product.count();
+  const totalPages = Math.ceil(productsCount / itemsPerPage);
+
   // Log the successful retrieval and send a response with the products
   console.log('Products are fetched');
   res.status(200).json({
     success: true,
     message: 'Products fetched successfully',
+    pagination: {
+      currentPage: page,
+      itemsPerPage: itemsPerPage,
+      totalProducts: productsCount,
+      totalPages: totalPages,
+    },
     data: products,
   });
 });
