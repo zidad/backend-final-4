@@ -10,6 +10,7 @@ This is an e-commerce web application built using Node.js and the Express.js fra
 - [Installation](#installation)
 - [Usage](#usage)
 - [Routes](#routes)
+- [Technologies](#technologies)
 - [Links](#links)
 - [Contributing](#contributing)
 - [License](#license)
@@ -133,6 +134,20 @@ This web application includes the following features:
 Please check the API documentation for more information:
 
 - [API Documentation and Routes](https://documenter.getpostman.com/view/25274258/2s9YJf1Mp2)
+
+## Technologies
+
+- Environment: **NodeJs**
+- Framework: **Express**
+- ORM: **Sequelize**
+- DataBase: **MySql**
+- Validations: **express-validator**
+- Developer tools and libraries:
+  * **nodemon**
+  * **dotenv**
+  * **bcrypt**
+- Testing:
+  * **Postman**
 
 ## Links
 
