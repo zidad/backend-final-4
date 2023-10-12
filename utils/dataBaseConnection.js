@@ -6,7 +6,8 @@ const sequelize = new Sequelize(config.development);
 sequelize
   .sync({ force: false })
   .then(() => {
-    sequelize.authenticate()
+    sequelize
+      .authenticate()
       .then(() => {
         console.log('Database connection has been established successfully.');
       })
@@ -18,4 +19,4 @@ sequelize
     console.error('Unable to synchronize the database:', error);
   });
 
-module.exports = sequelize
+module.exports = sequelize;
