@@ -1,7 +1,7 @@
 module.exports = [
     {
         'id': 1,
-        'totalPrice': 150.00,
+        'totalPrice': 614.95,
         'date': '2023-10-05',
         'status': 'Processing',
         'tax': 15.00,
@@ -13,7 +13,7 @@ module.exports = [
     },
     {
         'id': 2,
-        'totalPrice': 120.50,
+        'totalPrice': 220.45,
         'date': '2023-10-06',
         'status': 'Shipped',
         'tax': 12.50,
@@ -25,7 +25,7 @@ module.exports = [
     },
     {
         'id': 3,
-        'totalPrice': 200.25,
+        'totalPrice': 635.23,
         'date': '2023-10-07',
         'status': 'Delivered',
         'tax': 20.25,
@@ -35,28 +35,4 @@ module.exports = [
         'userId': 3,
         'addressId': 3
     },
-    {
-        'id': 4,
-        'totalPrice': 80.75,
-        'date': '2023-10-08',
-        'status': 'Processing',
-        'tax': 8.75,
-        'deliveryFee': 5.00,
-        'paymentId': 4,
-        'cartId': 1,
-        'userId': 2,
-        'addressId': 4
-    },
-    {
-        'id': 5,
-        'totalPrice': 300.00,
-        'date': '2023-10-09',
-        'status': 'Shipped',
-        'tax': 30.00,
-        'deliveryFee': 20.00,
-        'paymentId': 5,
-        'cartId': 2,
-        'userId': 1,
-        'addressId': 5
-    }
 ];
