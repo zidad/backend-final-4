@@ -152,6 +152,8 @@ Please check the API documentation for more information:
 ## Links
 
 - **DBschema** : [schema](https://drive.google.com/file/d/1oMzvGsL2REHWoVoemKOW1zyfqvW1-OLJ/view?usp=drive_link)
+- **API Sheet** : [sheet](https://docs.google.com/spreadsheets/d/1-MVTv1j3o96PzLa1DHij-6f5ijhFKIS6_ImvOv748N4/edit?usp=drive_link)
+- **Google Drive** : [drive](https://drive.google.com/drive/folders/1Lor5PbsP_AoPMgC3iBY-ycuXpwMZ57ZD?usp=drive_link)
 
 ## Contributing
 
