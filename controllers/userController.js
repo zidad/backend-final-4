@@ -19,7 +19,6 @@ const createUser = asyncWrapper(async (req, res, next) => {
     dateOfBirth,
     password,
     imageUrl,
-    role,
   } = req.body; // change to let
 
   // // Convert first name and last name to lowercase
