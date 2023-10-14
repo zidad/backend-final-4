@@ -1,5 +1,6 @@
 module.exports = [
     {
+        'id': 1,
         'firstName': 'Alice',
         'lastName': 'Smith',
         'email': 'alice.smith@example.com',
@@ -10,6 +11,7 @@ module.exports = [
         'role': 'admin'
     },
     {
+        'id': 2,
         'firstName': 'John',
         'lastName': 'Wick',
         'email': 'john.smith@example.com',
@@ -20,9 +22,10 @@ module.exports = [
         'role': 'customer'
     },
     {
+        'id': 3,
         'firstName': 'Sara',
         'lastName': 'Adam',
-        'email': 'Sara.smith@example.com',
+        'email': 'Sara.adam@example.com',
         'mobile': '123987456',
         'dateOfBirth': '1995-11-19',
         'password': '123456',
