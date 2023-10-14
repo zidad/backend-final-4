@@ -1,6 +1,7 @@
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const { Category, Product } = require('../models');
+const { Op } = require('sequelize');
 
 /**
  * Fetches all categories from the database.
@@ -78,12 +79,26 @@ const getCategory = asyncWrapper(async (req, res, next) => {
   // Extract category ID from request parameters
   const id = Number(req.params.id);
 
+  // Extract the handpicked query parameters
+  const handpicked = req.query.handpicked
+    ? JSON.parse(req.query.handpicked)
+    : false;
+
   // Find the category by ID in the database
   const category = await Category.findByPk(id);
 
-  console.log('Category: ', category?.name);
+  // Initializing the where clause
+  let whereClause = {
+    categoryId: id,
+  };
+  if (handpicked) {
+    whereClause.totalRating = { [Op.gte]: 4.5 };
+    whereClause.price = { [Op.lte]: 100 };
+  }
+
+  console.log('Fetched Category: ', category?.name);
   if (category) {
-    const products = await Product.findAll({ where: { categoryId: id } });
+    const products = await Product.findAll({ where: whereClause });
 
     console.log('Products: ', products?.name);
     // Send a response with category and associated products
@@ -120,8 +135,8 @@ const addCategory = asyncWrapper(async (req, res, next) => {
     return next(createCustomError(`Error creating the category`, 500));
   }
 
+  // Log the created category
   console.log('Created Category: ', newCategory?.name);
-
   // Send a success response with the newly created category
   res.status(201).json({
     success: true,
@@ -143,21 +158,24 @@ const updateCategory = asyncWrapper(async (req, res) => {
   const { name, imgUrl, isFeatured } = req.body;
 
   // Update the category in the database
-  const updatedCategory = await Category.update(
+  const [updatedRowCount] = await Category.update(
     { name, imgUrl, isFeatured },
     { where: { id: categoryId } }
   );
 
   // If no rows are updated, throw a custom error
-  if (updatedCategory[0] === 0) {
+  if (updatedRowCount === 0) {
     throw createCustomError(`Category not found`, 404);
   }
+
+  const updatedCategory = await Category.findByPk(categoryId);
+  console.log('Updated address: ', updatedCategory);
 
   // Send a success response with the updated category
   res.status(200).json({
     success: true,
     message: `Category updated successfully`,
-    data: updatedCategory[0],
+    data: updatedCategory,
   });
 });
 
@@ -177,14 +195,14 @@ const deleteCategory = asyncWrapper(async (req, res) => {
 
   // If the category is not found, throw a custom error
   if (!deletedCategory) {
-    throw createCustomError(`Category not found`, 404);
+    return next(createCustomError(`No address with id: ${categoryId} is found`, 404));
   }
 
+  console.log('Deleted category: ', deletedCategory);
   // Send a success response after deleting the category
   res.status(200).json({
     success: true,
     message: `Category deleted successfully`,
-    data: deletedCategory,
   });
 });
 

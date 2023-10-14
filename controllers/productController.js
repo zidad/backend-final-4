@@ -73,8 +73,16 @@ const createProduct = asyncWrapper(async (req, res, next) => {
  */
 const getProducts = asyncWrapper(async (req, res) => {
   // Extract request query parameters
+  const page = req.query.page ? parseInt(req.query.page) : 1;
+  const itemsPerPage = 20;
+  const offset = (page - 1) * itemsPerPage;
+
   const newArrival = req.query.newArrival
     ? JSON.parse(req.query.newArrival)
+    : false;
+
+  const handpicked = req.query.handpicked
+    ? JSON.parse(req.query.handpicked)
     : false;
 
   // where clause if the newArrival exists
@@ -86,15 +94,33 @@ const getProducts = asyncWrapper(async (req, res) => {
       [Op.gte]: threeMonthsAgo,
     };
   }
+  if (handpicked) {
+    whereClause.totalRating = { [Op.gte]: 4.5 };
+    whereClause.price = { [Op.lte]: 100 };
+  }
 
   // Fetch all products from the database
-  const products = await Product.findAll({ where: whereClause });
+  const products = await Product.findAll({
+    where: whereClause,
+    limit: itemsPerPage,
+    offset: offset,
+  });
+
+  // Fetching the number of products and pages to return in the response
+  const productsCount = await Product.count();
+  const totalPages = Math.ceil(productsCount / itemsPerPage);
 
   // Log the successful retrieval and send a response with the products
   console.log('Products are fetched');
   res.status(200).json({
     success: true,
     message: 'Products fetched successfully',
+    pagination: {
+      currentPage: page,
+      itemsPerPage: itemsPerPage,
+      totalProducts: productsCount,
+      totalPages: totalPages,
+    },
     data: products,
   });
 });

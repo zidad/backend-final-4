@@ -22,14 +22,14 @@ module.exports = [
     },
     {
         'id': 4,
-        'price': 10.75,
+        'price': 139.96,
         'quantity': 4,
         'productId': 4,
         'orderId': 2
     },
     {
         'id': 5,
-        'price': 60.00,
+        'price': 599.98,
         'quantity': 2,
         'productId': 5,
         'orderId': 3

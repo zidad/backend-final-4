@@ -40,6 +40,10 @@ const categoryQueryRules = () => {
       .optional()
       .default(false)
       .isBoolean(),
+    query('handpicked', 'handpicked query must be boolean')
+      .optional()
+      .default(false)
+      .isBoolean(),
   ];
 };
 

@@ -1,7 +1,7 @@
 module.exports = [
     {
         'id': 1,
-        'totalPrice': 150.00,
+        'totalPrice': 614.95,
         'date': '2023-10-05',
         'status': 'Processing',
         'tax': 15.00,
@@ -13,7 +13,7 @@ module.exports = [
     },
     {
         'id': 2,
-        'totalPrice': 120.50,
+        'totalPrice': 220.45,
         'date': '2023-10-06',
         'status': 'Shipped',
         'tax': 12.50,
@@ -25,7 +25,7 @@ module.exports = [
     },
     {
         'id': 3,
-        'totalPrice': 200.25,
+        'totalPrice': 635.23,
         'date': '2023-10-07',
         'status': 'Delivered',
         'tax': 20.25,

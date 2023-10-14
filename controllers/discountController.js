@@ -1,6 +1,28 @@
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const Discount = require('../models/discountModel');
+const { Product } = require('../models');
+
+/**
+ * Fetches all discounts from the database.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
+const getDiscounts = asyncWrapper(async (req, res, next) => {
+  // Find all discounts in the database
+  const discounts = await Discount.findAll();
+
+  // Log the successful retrieval
+  console.log('Discounts are fetched');
+
+  // Send a success response with the fetched discounts
+  res.status(200).json({
+    success: true,
+    message: `Discounts successfully fetched`,
+    data: discounts,
+  });
+});
 
 /**
  * Fetches a discount by ID from the database.
@@ -23,11 +45,16 @@ const getDiscount = asyncWrapper(async (req, res, next) => {
 
   console.log(`Discount with ID ${discountId} successfully fetched`);
 
+  // If the discount is found, fetch all products associated with the discount
+  const products = await Product.findAll({
+    where: { discountId: discountId },
+  });
+
   // Send a success response with the fetched discount
   res.status(200).json({
     success: true,
     message: `Discount successfully fetched`,
-    data: discount,
+    data: { discount, products },
   });
 });
 
@@ -75,15 +102,18 @@ const updateDiscount = asyncWrapper(async (req, res) => {
   const { description, discountPercentage } = req.body;
 
   // Update the discount in the database
-  const updatedDiscount = await Discount.update(
+  const updatedRowCount = await Discount.update(
     { description, discountPercentage },
     { where: { id: discountId } }
   );
 
   // If no rows are updated, throw a custom error
-  if (updatedDiscount[0] === 0) {
-    throw createCustomError(`Discount not found`, 404);
+  if (updatedRowCount === 0) {
+    return next(createCustomError(`No discount with id: ${discountId} is found`, 404));
   }
+
+  const updatedDiscount = await Address.findByPk(id);
+  console.log('Updated discount: ', updatedDiscount);
 
   res.status(200).json({
     success: true,
@@ -102,23 +132,23 @@ const deleteDiscount = asyncWrapper(async (req, res) => {
   const discountId = req.params.id;
 
   // Delete the discount from the database
-  const deletedDiscount = await Discount.destroy({
+  const deletedRowCount = await Discount.destroy({
     where: { id: discountId },
   });
 
   // If the discount is not found, throw a custom error
-  if (!deletedDiscount) {
-    throw createCustomError(`Discount not found`, 404);
+  if (deletedRowCount === 0 ) {
+    return next(createCustomError(`No discount with id: ${discountId} is found`, 404));
   }
 
   res.status(200).json({
     success: true,
     message: `Discount deleted successfully`,
-    data: deletedDiscount,
   });
 });
 
 module.exports = {
+  getDiscounts,
   getDiscount,
   addDiscount,
   updateDiscount,
