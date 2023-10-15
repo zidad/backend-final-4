@@ -15,7 +15,7 @@ const fetchCart = asyncWrapper(async (req, res, next) => {
   console.log('Fetching Cart from userId:' + userId);
 
   // Fetching the cart based on the user
-  const cart = await Cart.findAll({
+  const cart = await Cart.findOne({
     where: {
       userId: userId,
     },
