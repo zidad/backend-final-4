@@ -8,7 +8,7 @@ module.exports = [
         'deliveryFee': 10.00,
         'paymentId': 1,
         'cartId': 1,
-        'userId': 1,
+        'userId': 2,
         'addressId': 1
     },
     {
@@ -20,7 +20,7 @@ module.exports = [
         'deliveryFee': 8.00,
         'paymentId': 2,
         'cartId': 2,
-        'userId': 2,
+        'userId': 3,
         'addressId': 2
     },
     {
@@ -31,8 +31,32 @@ module.exports = [
         'tax': 20.25,
         'deliveryFee': 15.00,
         'paymentId': 3,
-        'cartId': 3,
-        'userId': 3,
+        'cartId': 1,
+        'userId': 2,
         'addressId': 3
     },
+    {
+        'id': 4,
+        'totalPrice': 80.75,
+        'date': '2023-10-08',
+        'status': 'Processing',
+        'tax': 8.75,
+        'deliveryFee': 5.00,
+        'paymentId': 4,
+        'cartId': 1,
+        'userId': 2,
+        'addressId': 4
+    },
+    {
+        'id': 5,
+        'totalPrice': 300.00,
+        'date': '2023-10-09',
+        'status': 'Shipped',
+        'tax': 30.00,
+        'deliveryFee': 20.00,
+        'paymentId': 5,
+        'cartId': 2,
+        'userId': 3,
+        'addressId': 5
+    }
 ];

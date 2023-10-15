@@ -1,5 +1,5 @@
 // Import necessary modules and dependencies
-const { Cart, WishList, User, Address, RatingReview } = require('../models');
+const { User, Address, RatingReview } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 
@@ -19,7 +19,6 @@ const createUser = asyncWrapper(async (req, res, next) => {
     dateOfBirth,
     password,
     imageUrl,
-    role,
   } = req.body; // change to let
 
   // // Convert first name and last name to lowercase
@@ -39,33 +38,15 @@ const createUser = asyncWrapper(async (req, res, next) => {
       dateOfBirth,
       password,
       imageUrl,
-      role,
+      role: 'admin'
     });
 
     // Log the created user and send a success response
     console.log('Created user: ', user?.firstName);
 
-    // Create the cart associated with the user
-    const cart = await Cart.findByPk(user.id);
-    if (!cart) {
-      await Cart.create({
-        id: user.id,
-        totalPrice: 0,
-        userId: user.id,
-      });
-    }
-
-    // Create the wishlist associated with the user.
-    const wishlist = await WishList.findByPk(user.id);
-    if (!wishlist) {
-      await WishList.create({
-        userId: user.id,
-      });
-    }
-
     return res.status(201).json({
       success: true,
-      message: 'User created successfully',
+      message: 'Admin created successfully',
       data: user,
     });
   } else {

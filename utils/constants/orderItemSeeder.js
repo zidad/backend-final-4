@@ -1,23 +1,23 @@
 module.exports = [
     {
         'id': 1,
-        'price': 199.98,
+        'price': 100.00,
         'quantity': 2,
         'productId': 1,
         'orderId': 1
     },
     {
         'id': 2,
-        'price': 389.97,
-        'quantity': 3,
-        'productId': 2,
+        'price': 60,
+        'quantity': 1,
+        'productId': 3,
         'orderId': 1
     },
     {
         'id': 3,
-        'price': 59.99,
-        'quantity': 1,
-        'productId': 3,
+        'price': 150,
+        'quantity': 3,
+        'productId': 2,
         'orderId': 2
     },
     {

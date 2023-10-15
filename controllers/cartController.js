@@ -44,7 +44,7 @@ const fetchCart = asyncWrapper(async (req, res, next) => {
  */
 const addItemToCart = asyncWrapper(async (req, res) => {
   // fetch userId from the body
-  const userId =req.body.userId; // Changed later to fetch from the jwt token
+  const userId = req.body.userId; // Changed later to fetch from the jwt token
   // Extract data from the body
   const productId = Number(req.body.productId);
   let quantity = Number(req.body.quantity);
