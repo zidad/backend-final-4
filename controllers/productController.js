@@ -1,5 +1,11 @@
 // Import necessary modules and dependencies
-const { Product, RatingReview } = require('../models');
+const {
+  Product,
+  RatingReview,
+  Discount,
+  Category,
+  Brand,
+} = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const { Op } = require('sequelize');
@@ -99,18 +105,45 @@ const getProducts = asyncWrapper(async (req, res) => {
     whereClause.price = { [Op.lte]: 100 };
   }
 
-  // Fetch all products from the database
+  // Fetch all products from the database, including Category, Brand, and Discount
   const products = await Product.findAll({
     where: whereClause,
     limit: itemsPerPage,
     offset: offset,
+    include: [
+      { model: Category, attributes: ['name'] },
+      { model: Brand, attributes: ['name'] },
+      { model: Discount, attributes: ['description', 'discountPercentage'] },
+    ],
   });
 
   // Fetching the number of products and pages to return in the response
   const productsCount = await Product.count();
   const totalPages = Math.ceil(productsCount / itemsPerPage);
 
-  // Log the successful retrieval and send a response with the products
+  // Transform the products data to include category name, brand name, and discount description/percentage
+  const transformedProducts = products.map((product) => {
+    return {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      availableInStock: product.availableInStock,
+      totalRating: product.totalRating,
+      ratingCount: product.ratingCount,
+      imageUrl: product.imageUrl,
+      category: product.category.name, // Access the category name
+      brand: product.brand.name, // Access the brand name
+      discount: {
+        description: product.discount.description, // Access the discount description
+        percentage: product.discount.discountPercentage, // Access the discount percentage
+      },
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    };
+  });
+
+  // Log the successful retrieval and send a response with the transformed products
   console.log('Products are fetched');
   res.status(200).json({
     success: true,
@@ -121,9 +154,10 @@ const getProducts = asyncWrapper(async (req, res) => {
       totalProducts: productsCount,
       totalPages: totalPages,
     },
-    data: products,
+    data: transformedProducts,
   });
 });
+
 
 // /**
 //  * Retrieves a single product by ID from the database.
@@ -161,7 +195,13 @@ const getProduct = asyncWrapper(async (req, res, next) => {
   const id = Number(req.params.id);
 
   // Find the product by ID in the database
-  const product = await Product.findByPk(id);
+  const product = await Product.findByPk(id, {
+    include: [
+      { model: Discount, attributes: ['description', 'discountPercentage'] },
+      { model: Category, attributes: ['name'] },
+      { model: Brand, attributes: ['name'] },
+    ],
+  });
 
   // If the product is found, fetch all ratingReviews associated with the product
   if (product) {
@@ -173,7 +213,27 @@ const getProduct = asyncWrapper(async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: 'Product and RatingReviews fetched successfully',
-      data: { product, ratingReviews },
+      data: {
+        product: {
+          id: product.id,
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          availableInStock: product.availableInStock,
+          totalRating: product.totalRating,
+          ratingCount: product.ratingCount,
+          imageUrl: product.imageUrl,
+          category: product.category.name,
+          brand: product.brand.name,
+          discount: {
+            description: product.discount.description,
+            percentage: product.discount.discountPercentage,
+          },
+          createdAt: product.createdAt,
+          updatedAt: product.updatedAt,
+        },
+        ratingReviews,
+      },
     });
   } else {
     // If the product is not found, invoke the next middleware with a custom error
