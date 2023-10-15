@@ -84,7 +84,6 @@ const getBrand = asyncWrapper(async (req, res, next) => {
     // If the brand is not found, invoke the next middleware with a custom error
     return next(createCustomError(`No brand with id: ${id} is found`, 404));
   }
-
 });
 
 /**
@@ -123,7 +122,7 @@ const addBrand = asyncWrapper(async (req, res, next) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const updateBrand = asyncWrapper(async (req, res) => {
+const updateBrand = asyncWrapper(async (req, res, next) => {
   // Extract brand ID from request parameters
   const brandId = req.params.id;
 
@@ -138,10 +137,12 @@ const updateBrand = asyncWrapper(async (req, res) => {
 
   // If no rows are updated, throw a custom error
   if (updatedRowCount === 0) {
-    return next(createCustomError(`No address with id: ${brandId} is found`, 404));
+    return next(
+      createCustomError(`No brand with id: ${brandId} is found`, 404)
+    );
   }
 
-  const updatedBrand = await Address.findByPk(brandId);
+  const updatedBrand = await Brand.findByPk(brandId);
   console.log('Updated address: ', updatedBrand);
 
   // Send a success response with the updated brand
@@ -157,7 +158,7 @@ const updateBrand = asyncWrapper(async (req, res) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const deleteBrand = asyncWrapper(async (req, res) => {
+const deleteBrand = asyncWrapper(async (req, res, next) => {
   // Extract brand ID from request parameters
   const brandId = req.params.id;
 
@@ -168,7 +169,9 @@ const deleteBrand = asyncWrapper(async (req, res) => {
 
   // If the brand is not found, throw a custom error
   if (deletedRowCount === 0) {
-    return next(createCustomError(`No brand with id: ${brandId} is found`, 404));
+    return next(
+      createCustomError(`No brand with id: ${brandId} is found`, 404)
+    );
   }
 
   // Send a success response after deleting the brand
