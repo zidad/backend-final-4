@@ -12,7 +12,7 @@ router.post('/api/register', asyncWrapper(async (req, res, next) => {
     const { firstName, lastName, email, mobile, password, dateOfBirth, imageUrl } = req.body;
 
     if (!firstName || !lastName || !email || !mobile || !dateOfBirth || !imageUrl || !password) {
-        return next(createCustomError('Please provide all required fields'), 400);
+        return next(createCustomError('Please provide all required fields', 400));
     }
 
     const alreadyExistsUser = await User.findOne({ where: { email } }).catch((err) => {
@@ -20,13 +20,13 @@ router.post('/api/register', asyncWrapper(async (req, res, next) => {
     });
 
     if (alreadyExistsUser) {
-        return next(createCustomError(`User with ${email} already exists`), 400);
+        return next(createCustomError(`User with ${email} already exists`, 400));
     }
 
     const newUser = await User.create({ firstName, lastName, email, mobile, dateOfBirth, password, imageUrl, role: 'customer' });
     const savedUser = await newUser.save().catch((err) => {
         console.log('Error: ', err);
-        return next(createCustomError(`Can't register user at the moment`), 400);
+        return next(createCustomError(`Can't register user at the moment`, 400));
     });
 
     // Create the cart associated with the user
