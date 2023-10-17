@@ -42,7 +42,7 @@ const fetchCart = asyncWrapper(async (req, res, next) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const addItemToCart = asyncWrapper(async (req, res) => {
+const addItemToCart = asyncWrapper(async (req, res, next) => {
   // fetch userId from the body
   const userId = req.body.userId; // Changed later to fetch from the jwt token
   // Extract data from the body
@@ -52,9 +52,15 @@ const addItemToCart = asyncWrapper(async (req, res) => {
   // logging  the process
   console.log('Adding Item to Cart with userId: ' + userId);
 
-  // fetch the user and cart
+  // fetch the user and cart and product
+  const fetchedProduct = await Product.findByPk(productId);
   const user = await User.findByPk(userId);
   const cart = await user.getCart();
+
+  // If the fetched product does not exist
+  if (!fetchedProduct) {
+    return next(createCustomError(`Product does not exists`, 404));
+  }
 
   // fetch all cart items related to the cart
   const cartItems = await cart.getCartItems({
@@ -65,24 +71,34 @@ const addItemToCart = asyncWrapper(async (req, res) => {
 
   // If the cart item already exists then add on its quantity and update the cart totalPrice
   if (cartItems.length > 0 && cartItems[0]) {
+    const totalQuantity = Number(cartItems[0].quantity) + quantity;
+    if (totalQuantity > fetchedProduct.availableInStock) {
+      return res.status(200).json({
+        success: false,
+        message: 'Required quantity more than the available',
+        available_quantity: fetchedProduct.availableInStock,
+      });
+    }
+
     const newTotal =
       Number(cart.totalPrice) + Number(cartItems[0].price * quantity);
-    console.log(cart.totalPrice, cartItems[0].price, quantity, newTotal);
+
     cart.update({
       totalPrice: newTotal,
     });
+
     quantity += Number(cartItems[0].quantity);
+
     await cartItems[0].update({
       quantity: quantity,
     });
+
     return res.status(200).json({
       success: true,
       message: `Item Added to Cart Successfully`,
       data: cartItems[0],
     });
   } else {
-    // If the cart item does not exists then add it to cart and update the cart totalPrice
-    const fetchedProduct = await Product.findByPk(productId);
     cart.totalPrice =
       Number(cart.totalPrice) + Number(fetchedProduct.price * quantity);
     cart.update({
