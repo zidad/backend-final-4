@@ -86,6 +86,16 @@ const updateRatingReview = asyncWrapper(async (req, res, next) => {
   // Destructure ratingReview properties from the request body
   const { title, description, rating, userId, productId } = req.body;
 
+  const existRatingReview = await RatingReview.findOne({
+    where: {
+      title, description, rating, userId, productId
+    }
+  });
+
+  if (existRatingReview) {
+    return next(createCustomError('Nothing to update', 200));
+  }
+
   // Update the ratingReview in the database
   const [updatedRowCount] = await RatingReview.update(
     { title, description, rating, userId, productId },

@@ -2,6 +2,8 @@
 const { User, Address, RatingReview } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
+const bcrypt = require('bcrypt');
+
 
 /**
  * Creates a new user in the database.
@@ -118,6 +120,25 @@ const updateUser = asyncWrapper(async (req, res, next) => {
     imageUrl,
   } = req.body;
 
+  const existUser = await User.findOne({
+    where: {
+      firstName,
+      lastName,
+      email,
+      mobile,
+      dateOfBirth,
+      imageUrl,
+    }
+  });
+
+
+  const user = await User.findByPk(id);
+  const isPasswordValid = bcrypt.compareSync(password, user.password);
+
+
+  if (existUser && isPasswordValid) {
+    return next(createCustomError('Nothing to update', 200));
+  }
   // Update the user in the database
   const [updatedRowCount] = await User.update(
     { firstName, lastName, email, mobile, dateOfBirth, password, imageUrl },
