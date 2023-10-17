@@ -1,5 +1,11 @@
 // Import necessary modules and dependencies
-const { Product, RatingReview } = require('../models');
+const {
+  Product,
+  RatingReview,
+  Discount,
+  Category,
+  Brand,
+} = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const { Op } = require('sequelize');
@@ -104,11 +110,55 @@ const getProducts = asyncWrapper(async (req, res) => {
     where: whereClause,
     limit: itemsPerPage,
     offset: offset,
+    include: [
+      { model: Category, attributes: ['name'] },
+      { model: Brand, attributes: ['name'] },
+      { model: Discount, attributes: ['description', 'discountPercentage'] },
+    ],
   });
 
   // Fetching the number of products and pages to return in the response
-  const productsCount = await Product.count();
-  const totalPages = Math.ceil(productsCount / itemsPerPage);
+  // Fetching the number of products that match the filter criteria
+  const filteredProductsCount = await Product.count({
+    where: whereClause, // Apply the same conditions
+  });
+
+  const filteredTotalPages = Math.ceil(filteredProductsCount / itemsPerPage);
+
+  // Check if the requested page exceeds the total number of pages
+  if (page > filteredTotalPages) {
+    // Respond with an error indicating that the page does not exist
+    return res.status(404).json({
+      success: false,
+      message: 'Page not found',
+    });
+  }
+
+  // Transform the products data to include category name, brand name, and discount description/percentage
+  const transformedProducts = products.map(async (product) => {
+    // Get the totalRating and ratingCount
+    const totalRating = await product.totalRating;
+    const ratingCount = await product.ratingCount;
+    return {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      availableInStock: product.availableInStock,
+      imageUrl: product.imageUrl,
+      category: product.category.name, // Access the category name
+      brand: product.brand.name, // Access the brand name
+      totalRating,
+      ratingCount,
+      discount: {
+        description: product.discount.description, // Access the discount description
+        percentage: product.discount.discountPercentage, // Access the discount percentage
+      },
+    };
+  });
+
+  // Wait for all promises to resolve
+  const responseData = await Promise.all(transformedProducts);
 
   // Log the successful retrieval and send a response with the products
   console.log('Products are fetched');
@@ -118,10 +168,10 @@ const getProducts = asyncWrapper(async (req, res) => {
     pagination: {
       currentPage: page,
       itemsPerPage: itemsPerPage,
-      totalProducts: productsCount,
-      totalPages: totalPages,
+      totalProducts: filteredProductsCount, // Update to use filtered count
+      totalPages: filteredTotalPages, // Update to use filtered count
     },
-    data: products,
+    data: responseData,
   });
 });
 
@@ -161,7 +211,13 @@ const getProduct = asyncWrapper(async (req, res, next) => {
   const id = Number(req.params.id);
 
   // Find the product by ID in the database
-  const product = await Product.findByPk(id);
+  const product = await Product.findByPk(id, {
+    include: [
+      { model: Discount, attributes: ['description', 'discountPercentage'] },
+      { model: Category, attributes: ['name'] },
+      { model: Brand, attributes: ['name'] },
+    ],
+  });
 
   // If the product is found, fetch all ratingReviews associated with the product
   if (product) {
@@ -169,11 +225,34 @@ const getProduct = asyncWrapper(async (req, res, next) => {
       where: { productId: id },
     });
 
+    const totalRating = await product.totalRating;
+    const ratingCount = await product.ratingCount;
+
+    const responseData = {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      availableInStock: product.availableInStock,
+      totalRating,
+      ratingCount,
+      imageUrl: product.imageUrl,
+      category: product.category.name,
+      brand: product.brand.name,
+      discount: {
+        description: product.discount.description,
+        percentage: product.discount.discountPercentage,
+      },
+    };
+
     // Send a response with product and associated ratingReviews
     return res.status(200).json({
       success: true,
       message: 'Product and RatingReviews fetched successfully',
-      data: { product, ratingReviews },
+      data: {
+        product: responseData,
+        ratingReviews,
+      },
     });
   } else {
     // If the product is not found, invoke the next middleware with a custom error
