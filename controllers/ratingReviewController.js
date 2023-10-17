@@ -1,5 +1,5 @@
 // Import necessary modules and dependencies
-const { RatingReview } = require('../models');
+const { RatingReview, Product } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 
@@ -8,9 +8,21 @@ const { createCustomError } = require('../utils/errors/custom-error');
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const createRatingReview = asyncWrapper(async (req, res) => {
+const createRatingReview = asyncWrapper(async (req, res, next) => {
   // Destructure required properties from the request body
   const { title, description, rating, userId, productId } = req.body;
+
+  const product = await Product.findByPk(productId);
+  const user = await Product.findByPk(userId);
+
+  // Check if the product and user exists
+  if (!user) {
+    return next(createCustomError(`No user is found`, 404));
+  }
+
+  if (!product) {
+    return next(createCustomError(`No product is found`, 404));
+  }
 
   // Create a new ratingReview in the database
   const ratingReview = await RatingReview.create({
@@ -20,6 +32,10 @@ const createRatingReview = asyncWrapper(async (req, res) => {
     userId,
     productId,
   });
+
+  // update the product total rating and rating count
+
+  await product.addRatingReview(ratingReview);
 
   // Log the created ratingReview and send a success response
   console.log('Created ratingReview: ', ratingReview);
@@ -69,7 +85,9 @@ const getRatingReview = asyncWrapper(async (req, res, next) => {
       data: ratingReview,
     });
   } else {
-    return next(createCustomError(`No ratingReview with id: ${id} is found`, 404));
+    return next(
+      createCustomError(`No ratingReview with id: ${id} is found`, 404)
+    );
   }
 });
 
@@ -94,7 +112,9 @@ const updateRatingReview = asyncWrapper(async (req, res, next) => {
 
   // If no rows are updated, invoke the next middleware with a custom error; otherwise, fetch the updated ratingReview and send a success response
   if (updatedRowCount === 0) {
-    return next(createCustomError(`No ratingReview with id: ${id} is found`, 404));
+    return next(
+      createCustomError(`No ratingReview with id: ${id} is found`, 404)
+    );
   }
 
   const updatedRatingReview = await RatingReview.findByPk(id);
@@ -121,7 +141,9 @@ const deleteRatingReview = asyncWrapper(async (req, res, next) => {
 
   // If no rows are deleted, invoke the next middleware with a custom error; otherwise, log the deletion and send a success response
   if (deletedRowCount === 0) {
-    return next(createCustomError(`No ratingReview with id: ${id} is found`, 404));
+    return next(
+      createCustomError(`No ratingReview with id: ${id} is found`, 404)
+    );
   }
 
   console.log('Deleted ratingReview: ', deletedRowCount);
@@ -137,5 +159,5 @@ module.exports = {
   getRatingReviews,
   getRatingReview,
   updateRatingReview,
-  deleteRatingReview
+  deleteRatingReview,
 };
