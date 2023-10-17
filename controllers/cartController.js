@@ -61,6 +61,9 @@ const addItemToCart = asyncWrapper(async (req, res, next) => {
   if (!fetchedProduct) {
     return next(createCustomError(`Product does not exists`, 404));
   }
+  if (!user) {
+    return next(createCustomError(`User does not exists`, 404));
+  }
 
   // fetch all cart items related to the cart
   const cartItems = await cart.getCartItems({
