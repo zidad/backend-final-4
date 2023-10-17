@@ -106,6 +106,24 @@ const getProducts = asyncWrapper(async (req, res) => {
     offset: offset,
   });
 
+  // Fetch totalRating and ratingCount for each product concurrently
+  const fetchAttributesPromises = products.map(async (product) => {
+    const [totalRating, ratingCount] = await Promise.all([
+      product.get('totalRating'),
+      product.get('ratingCount'),
+    ]);
+
+    // Return a simplified product object
+    return {
+      ...product.dataValues,
+      totalRating,
+      ratingCount,
+    };
+  });
+
+  // Wait for all promises to resolve
+  const productsWithReview = await Promise.all(fetchAttributesPromises);
+
   // Fetching the number of products and pages to return in the response
   const productsCount = await Product.count();
   const totalPages = Math.ceil(productsCount / itemsPerPage);
@@ -121,7 +139,7 @@ const getProducts = asyncWrapper(async (req, res) => {
       totalProducts: productsCount,
       totalPages: totalPages,
     },
-    data: products,
+    data: productsWithReview,
   });
 });
 
@@ -169,11 +187,17 @@ const getProduct = asyncWrapper(async (req, res, next) => {
       where: { productId: id },
     });
 
+    const totalRating = await product.totalRating;
+    const ratingCount = await product.ratingCount;
+
     // Send a response with product and associated ratingReviews
     return res.status(200).json({
       success: true,
       message: 'Product and RatingReviews fetched successfully',
-      data: { product, ratingReviews },
+      data: {
+        product: { ...product.dataValues, totalRating, ratingCount },
+        ratingReviews,
+      },
     });
   } else {
     // If the product is not found, invoke the next middleware with a custom error
