@@ -93,6 +93,7 @@ const getProducts = asyncWrapper(async (req, res) => {
 
   // where clause if the newArrival exists
   let whereClause = {};
+
   if (newArrival) {
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
@@ -100,6 +101,7 @@ const getProducts = asyncWrapper(async (req, res) => {
       [Op.gte]: threeMonthsAgo,
     };
   }
+
   if (handpicked) {
     whereClause.totalRating = { [Op.gte]: 4.5 };
     whereClause.price = { [Op.lte]: 100 };
@@ -117,9 +119,22 @@ const getProducts = asyncWrapper(async (req, res) => {
     ],
   });
 
-  // Fetching the number of products and pages to return in the response
-  const productsCount = await Product.count();
-  const totalPages = Math.ceil(productsCount / itemsPerPage);
+  // Fetching the number of products that match the filter criteria
+  const filteredProductsCount = await Product.count({
+    where: whereClause, // Apply the same conditions
+  });
+
+  // Calculate the total number of pages based on the filtered count
+  const filteredTotalPages = Math.ceil(filteredProductsCount / itemsPerPage);
+
+  // Check if the requested page exceeds the total number of pages
+  if (page > filteredTotalPages) {
+    // Respond with an error indicating that the page does not exist
+    return res.status(404).json({
+      success: false,
+      message: 'Page not found',
+    });
+  }
 
   // Transform the products data to include category name, brand name, and discount description/percentage
   const transformedProducts = products.map((product) => {
@@ -151,8 +166,8 @@ const getProducts = asyncWrapper(async (req, res) => {
     pagination: {
       currentPage: page,
       itemsPerPage: itemsPerPage,
-      totalProducts: productsCount,
-      totalPages: totalPages,
+      totalProducts: filteredProductsCount, // Update to use filtered count
+      totalPages: filteredTotalPages, // Update to use filtered count
     },
     data: transformedProducts,
   });
