@@ -100,12 +100,30 @@ const getCategory = asyncWrapper(async (req, res, next) => {
   if (category) {
     const products = await Product.findAll({ where: whereClause });
 
+    // Fetch totalRating and ratingCount for each product concurrently
+    const fetchAttributesPromises = products.map(async (product) => {
+      const [totalRating, ratingCount] = await Promise.all([
+        product.get('totalRating'),
+        product.get('ratingCount'),
+      ]);
+
+      // Return a simplified product object
+      return {
+        ...product.dataValues,
+        totalRating,
+        ratingCount,
+      };
+    });
+
+    // Wait for all promises to resolve
+    const productsWithReview = await Promise.all(fetchAttributesPromises);
+
     console.log('Products: ', products?.name);
     // Send a response with category and associated products
     return res.status(200).json({
       success: true,
       message: `Category and products successfully fetched`,
-      data: { category, products },
+      data: { category, products: productsWithReview },
     });
   } else {
     // If the category is not found, invoke the next middleware with a custom error
@@ -184,7 +202,7 @@ const updateCategory = asyncWrapper(async (req, res) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const deleteCategory = asyncWrapper(async (req, res) => {
+const deleteCategory = asyncWrapper(async (req, res, next) => {
   // Extract category ID from request parameters
   const categoryId = req.params.id;
 
@@ -195,7 +213,9 @@ const deleteCategory = asyncWrapper(async (req, res) => {
 
   // If the category is not found, throw a custom error
   if (!deletedCategory) {
-    return next(createCustomError(`No address with id: ${categoryId} is found`, 404));
+    return next(
+      createCustomError(`No address with id: ${categoryId} is found`, 404)
+    );
   }
 
   console.log('Deleted category: ', deletedCategory);
