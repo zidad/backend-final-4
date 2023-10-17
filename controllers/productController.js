@@ -277,7 +277,41 @@ const updateProduct = asyncWrapper(async (req, res, next) => {
     imageUrl,
     categoryId,
     brandId,
+    discountId
   } = req.body;
+
+  // Fetch the existing product
+  const existingProduct = await Product.findByPk(id);
+
+  if (!existingProduct) {
+    return next(createCustomError(`No product with id: ${id} is found`, 404));
+  }
+
+  // Compare the existing product's data with the new data
+  const isDataChanged =
+    title !== existingProduct.title ||
+    description !== existingProduct.description ||
+    price !== existingProduct.price ||
+    Number(availableInStock) !== existingProduct.availableInStock ||
+    Number(totalRating).toFixed(2) !== existingProduct.totalRating ||
+    Number(ratingCount) !== existingProduct.ratingCount ||
+    imageUrl !== existingProduct.imageUrl;
+    Number(categoryId) !== existingProduct.categoryId ||
+    Number(brandId) !== existingProduct.brandId;
+
+  console.log(
+    imageUrl,
+    existingProduct.imageUrl
+  );
+
+  if (!isDataChanged) {
+    return next(
+      createCustomError(
+        `No changes have been applied to product id: ${id}`,
+        400
+      )
+    );
+  }
 
   // Update the product in the database
   const [updatedRowCount] = await Product.update(
