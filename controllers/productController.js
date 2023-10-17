@@ -93,7 +93,6 @@ const getProducts = asyncWrapper(async (req, res) => {
 
   // where clause if the newArrival exists
   let whereClause = {};
-
   if (newArrival) {
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
@@ -101,13 +100,12 @@ const getProducts = asyncWrapper(async (req, res) => {
       [Op.gte]: threeMonthsAgo,
     };
   }
-
   if (handpicked) {
     whereClause.totalRating = { [Op.gte]: 4.5 };
     whereClause.price = { [Op.lte]: 100 };
   }
 
-  // Fetch all products from the database, including Category, Brand, and Discount
+  // Fetch all products from the database
   const products = await Product.findAll({
     where: whereClause,
     limit: itemsPerPage,
@@ -119,12 +117,12 @@ const getProducts = asyncWrapper(async (req, res) => {
     ],
   });
 
+  // Fetching the number of products and pages to return in the response
   // Fetching the number of products that match the filter criteria
   const filteredProductsCount = await Product.count({
     where: whereClause, // Apply the same conditions
   });
 
-  // Calculate the total number of pages based on the filtered count
   const filteredTotalPages = Math.ceil(filteredProductsCount / itemsPerPage);
 
   // Check if the requested page exceeds the total number of pages
@@ -137,28 +135,32 @@ const getProducts = asyncWrapper(async (req, res) => {
   }
 
   // Transform the products data to include category name, brand name, and discount description/percentage
-  const transformedProducts = products.map((product) => {
+  const transformedProducts = products.map(async (product) => {
+    // Get the totalRating and ratingCount
+    const totalRating = await product.totalRating;
+    const ratingCount = await product.ratingCount;
     return {
       id: product.id,
       title: product.title,
       description: product.description,
       price: product.price,
       availableInStock: product.availableInStock,
-      totalRating: product.totalRating,
-      ratingCount: product.ratingCount,
       imageUrl: product.imageUrl,
       category: product.category.name, // Access the category name
       brand: product.brand.name, // Access the brand name
+      totalRating,
+      ratingCount,
       discount: {
         description: product.discount.description, // Access the discount description
         percentage: product.discount.discountPercentage, // Access the discount percentage
       },
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
     };
   });
 
-  // Log the successful retrieval and send a response with the transformed products
+  // Wait for all promises to resolve
+  const responseData = await Promise.all(transformedProducts);
+
+  // Log the successful retrieval and send a response with the products
   console.log('Products are fetched');
   res.status(200).json({
     success: true,
@@ -169,10 +171,9 @@ const getProducts = asyncWrapper(async (req, res) => {
       totalProducts: filteredProductsCount, // Update to use filtered count
       totalPages: filteredTotalPages, // Update to use filtered count
     },
-    data: transformedProducts,
+    data: responseData,
   });
 });
-
 
 // /**
 //  * Retrieves a single product by ID from the database.
@@ -224,29 +225,32 @@ const getProduct = asyncWrapper(async (req, res, next) => {
       where: { productId: id },
     });
 
+    const totalRating = await product.totalRating;
+    const ratingCount = await product.ratingCount;
+
+    const responseData = {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      availableInStock: product.availableInStock,
+      totalRating,
+      ratingCount,
+      imageUrl: product.imageUrl,
+      category: product.category.name,
+      brand: product.brand.name,
+      discount: {
+        description: product.discount.description,
+        percentage: product.discount.discountPercentage,
+      },
+    };
+
     // Send a response with product and associated ratingReviews
     return res.status(200).json({
       success: true,
       message: 'Product and RatingReviews fetched successfully',
       data: {
-        product: {
-          id: product.id,
-          title: product.title,
-          description: product.description,
-          price: product.price,
-          availableInStock: product.availableInStock,
-          totalRating: product.totalRating,
-          ratingCount: product.ratingCount,
-          imageUrl: product.imageUrl,
-          category: product.category.name,
-          brand: product.brand.name,
-          discount: {
-            description: product.discount.description,
-            percentage: product.discount.discountPercentage,
-          },
-          createdAt: product.createdAt,
-          updatedAt: product.updatedAt,
-        },
+        product: responseData,
         ratingReviews,
       },
     });
@@ -277,41 +281,7 @@ const updateProduct = asyncWrapper(async (req, res, next) => {
     imageUrl,
     categoryId,
     brandId,
-    discountId
   } = req.body;
-
-  // Fetch the existing product
-  const existingProduct = await Product.findByPk(id);
-
-  if (!existingProduct) {
-    return next(createCustomError(`No product with id: ${id} is found`, 404));
-  }
-
-  // Compare the existing product's data with the new data
-  const isDataChanged =
-    title !== existingProduct.title ||
-    description !== existingProduct.description ||
-    price !== existingProduct.price ||
-    Number(availableInStock) !== existingProduct.availableInStock ||
-    Number(totalRating).toFixed(2) !== existingProduct.totalRating ||
-    Number(ratingCount) !== existingProduct.ratingCount ||
-    imageUrl !== existingProduct.imageUrl;
-    Number(categoryId) !== existingProduct.categoryId ||
-    Number(brandId) !== existingProduct.brandId;
-
-  console.log(
-    imageUrl,
-    existingProduct.imageUrl
-  );
-
-  if (!isDataChanged) {
-    return next(
-      createCustomError(
-        `No changes have been applied to product id: ${id}`,
-        400
-      )
-    );
-  }
 
   // Update the product in the database
   const [updatedRowCount] = await Product.update(
