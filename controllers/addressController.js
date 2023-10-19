@@ -8,17 +8,23 @@ const { createCustomError } = require('../utils/errors/custom-error');
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const createAddress = asyncWrapper(async (req, res) => {
+const createAddress = asyncWrapper(async (req, res, next) => {
   // Destructure required properties from the request body
   const { street, postalCode, state, city, userId } = req.body;
 
+  const existAddress = await Address.findOne({
+    where: {
+      street, postalCode, state, city, userId
+    }
+  });
+
+  if (existAddress) {
+    return next(createCustomError(`Address already exists`, 400));
+  }
+
   // Create a new address in the database
   const address = await Address.create({
-    street,
-    postalCode,
-    state,
-    city,
-    userId,
+    street, postalCode, state, city, userId
   });
 
   // Log the created address and send a success response
@@ -85,6 +91,16 @@ const updateAddress = asyncWrapper(async (req, res, next) => {
 
   // Destructure address properties from the request body
   const { street, postalCode, state, city, userId } = req.body;
+
+  const existAddress = await Address.findOne({
+    where: {
+      street, postalCode, state, city, userId
+    }
+  });
+
+  if (existAddress) {
+    return next(createCustomError('Nothing to update', 200));
+  }
 
   // Update the address in the database
   const [updatedRowCount] = await Address.update(

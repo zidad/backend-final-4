@@ -21,12 +21,12 @@ module.exports = [
     },
     {
         'id': 5,
-        'wishListId': 3,
+        'wishListId': 1,
         'productId': 5
     },
     {
         'id': 6,
-        'wishListId': 3,
+        'wishListId': 2,
         'productId': 6
     },
     {
@@ -41,7 +41,7 @@ module.exports = [
     },
     {
         'id': 9,
-        'wishListId': 3,
+        'wishListId': 1,
         'productId': 9
     },
     {
@@ -61,7 +61,7 @@ module.exports = [
     },
     {
         'id': 13,
-        'wishListId': 3,
+        'wishListId': 2,
         'productId': 13
     },
     {
@@ -71,7 +71,7 @@ module.exports = [
     },
     {
         'id': 15,
-        'wishListId': 3,
+        'wishListId': 1,
         'productId': 15
     }
 ];

@@ -87,15 +87,7 @@ const User = sequelize.define('user', {
   role: {
     type: DataTypes.STRING(255),
     allowNull: false,
-    validate: {
-      notEmpty: {
-        msg: 'Role cannot be empty',
-      },
-      isIn: {
-        args: [['admin', 'customer']],
-        msg: 'Invalid role. Must be either "admin" or "customer".',
-      },
-    },
+    defaultValue: 'admin',
   },
   fullName: {
     type: DataTypes.VIRTUAL,

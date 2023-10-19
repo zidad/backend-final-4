@@ -9,7 +9,7 @@ const { Product } = require('../models');
  * @param {Object} res - Express response object.
  * @param {function} next - Express next middleware function.
  */
-const getDiscounts = asyncWrapper(async (req, res, next) => {
+const getDiscounts = asyncWrapper(async (req, res) => {
   // Find all discounts in the database
   const discounts = await Discount.findAll();
 
@@ -94,7 +94,7 @@ const addDiscount = asyncWrapper(async (req, res, next) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const updateDiscount = asyncWrapper(async (req, res) => {
+const updateDiscount = asyncWrapper(async (req, res, next) => {
   // Extract discount ID from request parameters
   const discountId = req.params.id;
 
@@ -109,10 +109,12 @@ const updateDiscount = asyncWrapper(async (req, res) => {
 
   // If no rows are updated, throw a custom error
   if (updatedRowCount === 0) {
-    return next(createCustomError(`No discount with id: ${discountId} is found`, 404));
+    return next(
+      createCustomError(`No discount with id: ${discountId} is found`, 404)
+    );
   }
 
-  const updatedDiscount = await Address.findByPk(id);
+  const updatedDiscount = await Discount.findByPk(discountId);
   console.log('Updated discount: ', updatedDiscount);
 
   res.status(200).json({
@@ -127,7 +129,7 @@ const updateDiscount = asyncWrapper(async (req, res) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-const deleteDiscount = asyncWrapper(async (req, res) => {
+const deleteDiscount = asyncWrapper(async (req, res, next) => {
   // Extract discount ID from request parameters
   const discountId = req.params.id;
 
@@ -137,8 +139,10 @@ const deleteDiscount = asyncWrapper(async (req, res) => {
   });
 
   // If the discount is not found, throw a custom error
-  if (deletedRowCount === 0 ) {
-    return next(createCustomError(`No discount with id: ${discountId} is found`, 404));
+  if (deletedRowCount === 0) {
+    return next(
+      createCustomError(`No discount with id: ${discountId} is found`, 404)
+    );
   }
 
   res.status(200).json({
