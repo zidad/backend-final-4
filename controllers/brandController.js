@@ -74,11 +74,29 @@ const getBrand = asyncWrapper(async (req, res, next) => {
   if (brand) {
     const products = await Product.findAll({ where: { brandId: id } });
 
+    // Fetch totalRating and ratingCount for each product concurrently
+    const fetchAttributesPromises = products.map(async (product) => {
+      const [totalRating, ratingCount] = await Promise.all([
+        product.get('totalRating'),
+        product.get('ratingCount'),
+      ]);
+
+      // Return a simplified product object
+      return {
+        ...product.dataValues,
+        totalRating,
+        ratingCount,
+      };
+    });
+
+    // Wait for all promises to resolve
+    const productsWithReview = await Promise.all(fetchAttributesPromises);
+
     // Send a success response with the fetched brand and associated products
     res.status(200).json({
       success: true,
       message: `Brand and products successfully fetched`,
-      data: { brand, products },
+      data: { brand, products: productsWithReview },
     });
   } else {
     // If the brand is not found, invoke the next middleware with a custom error
