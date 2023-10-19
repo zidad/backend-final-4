@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  # MySQL database service
+  db:
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=finalproject4db
+    networks:
+      - backend-final
+
+  # Node.js application service
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=finalproject4db
+    networks:
+      - backend-final
+    depends_on:
+      - db
+
+networks:
+  backend-final:
+    driver: bridge
+    
