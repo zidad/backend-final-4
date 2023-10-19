@@ -2,7 +2,11 @@
 const { Cart, Order, OrderItem } = require('../models');
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
-const { updateProductStockInCart, updateProductStockOnOrderCancellation } = require('../utils/updateProductStock');
+const {
+  updateProductStockInCart,
+  updateProductStockOnOrderCancellation,
+} = require('../utils/updateProductStock');
+const { development } = require('../config/config');
 
 /**
  * Fetch the user orders based on the authorized user
@@ -52,7 +56,7 @@ const createOrder = asyncWrapper(async (req, res, next) => {
   const cartId = Number(req.body.cartId); // Changed later based on requirements
   const { status, date } = req.body;
   const tax = 0;
-  const deliveryFee = 12;
+  const deliveryFee = development.deliveryFee;
   const paymentId = Number(req.body.paymentId);
   const addressId = Number(req.body.addressId);
 
@@ -184,7 +188,7 @@ const cancelOrder = asyncWrapper(async (req, res, next) => {
 
   // Call the function to update product stock
   await updateProductStockOnOrderCancellation(order);
- 
+
   // updating the order
   const deletedRowCount = await Order.update(
     { status: 'cancelled' },
@@ -202,7 +206,6 @@ const cancelOrder = asyncWrapper(async (req, res, next) => {
     .status(200)
     .json({ success: true, message: 'Order Cancelled successfully' });
 });
-
 
 //exports
 module.exports = {

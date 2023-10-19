@@ -9,6 +9,7 @@ const {
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const { Op } = require('sequelize');
+const { development } = require('../config/config');
 
 /**
  * Creates a new product in the database.
@@ -80,7 +81,7 @@ const createProduct = asyncWrapper(async (req, res, next) => {
 const getProducts = asyncWrapper(async (req, res) => {
   // Extract request query parameters
   const page = req.query.page ? parseInt(req.query.page) : 1;
-  const itemsPerPage = 20;
+  const itemsPerPage = development.itemsPerPage;
   const offset = (page - 1) * itemsPerPage;
 
   const newArrival = req.query.newArrival
@@ -94,15 +95,15 @@ const getProducts = asyncWrapper(async (req, res) => {
   // where clause if the newArrival exists
   let whereClause = {};
   if (newArrival) {
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    const nthMonthAgo = new Date();
+    nthMonthAgo.setMonth(nthMonthAgo.getMonth() - development.newArrivalMonths);
     whereClause.createdAt = {
-      [Op.gte]: threeMonthsAgo,
+      [Op.gte]: nthMonthAgo,
     };
   }
   if (handpicked) {
-    whereClause.totalRating = { [Op.gte]: 4.5 };
-    whereClause.price = { [Op.lte]: 100 };
+    whereClause.totalRating = { [Op.gte]: development.handPickedRating };
+    whereClause.price = { [Op.lte]: development.handPickedPrice };
   }
 
   // Fetch all products from the database
