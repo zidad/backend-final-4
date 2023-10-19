@@ -1,10 +1,12 @@
 // imports
 const DataTypes = require('sequelize');
 const sequelize = require('../utils/dataBaseConnection');
-const User = require('./userModel');
+const Product = require('./productModel');
+const Cart = require('./cartModel');
 
-// Cart Model
-const Cart = sequelize.define('cart',
+// cartItem model
+const CartItem = sequelize.define(
+  'cartItem',
   {
     id: {
       type: DataTypes.INTEGER(15),
@@ -12,7 +14,7 @@ const Cart = sequelize.define('cart',
       autoIncrement: true,
       primaryKey: true,
     },
-    totalPrice: {
+    price: {
       type: DataTypes.DECIMAL(20, 2),
       allowNull: false,
       validate: {
@@ -21,11 +23,33 @@ const Cart = sequelize.define('cart',
         },
       },
     },
-    userId: {
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        isInt: {
+          msg: 'Quantity count must be an integer',
+        },
+        min: {
+          args: [0],
+          msg: 'Quantity count must be greater than or equal to 0',
+        },
+      },
+    },
+    productId: {
       type: DataTypes.INTEGER(15),
       allowNull: false,
       references: {
-        model: User,
+        model: Product,
+        key: 'id',
+        onDelete: 'CASCADE',
+      },
+    },
+    cartId: {
+      type: DataTypes.INTEGER(15),
+      allowNull: false,
+      references: {
+        model: Cart,
         key: 'id',
         onDelete: 'CASCADE',
       },
@@ -37,9 +61,18 @@ const Cart = sequelize.define('cart',
   }
 );
 
-// Cart Associations
-User.hasOne(Cart, { foreignKey: 'userId' });
-Cart.belongsTo(User, { onDelete: 'cascade', hooks: true });
+//Associations
+Cart.hasMany(CartItem, {
+  foreignKeys: 'cartId',
+});
+CartItem.belongsTo(Cart, {
+  foreignKeys: 'cartId',
+});
 
-// exports
-module.exports = Cart;
+Product.hasMany(CartItem, {
+  foreignKeys: 'productId',
+});
+CartItem.belongsTo(Product);
+
+//exports
+module.exports = CartItem;
