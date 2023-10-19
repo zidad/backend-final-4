@@ -52,29 +52,33 @@ const Product = sequelize.define(
       },
     },
     totalRating: {
-      type: DataTypes.DECIMAL(3, 2),
-      allowNull: false,
-      validate: {
-        isDecimal: {
-          msg: 'Total rating must be a decimal number',
-        },
-        min: {
-          args: [0],
-          msg: 'Total rating must be greater than or equal to 0',
-        },
+      type: DataTypes.VIRTUAL,
+      async get() {
+        try {
+          const reviews = await this.getRatingReviews();
+          if (!reviews) return 0;
+          const ratings = reviews.map((review) => review.rating);
+          const total = ratings.reduce((acc, current) => acc + current, 0);
+          const averageRating = total / ratings.length;
+          const scaledRating = (averageRating / 5) * 5;
+          return scaledRating;
+        } catch (error) {
+          console.error(error);
+          console.log('Error getting rating for product');
+        }
       },
     },
     ratingCount: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        isInt: {
-          msg: 'Rating count must be an integer',
-        },
-        min: {
-          args: [0],
-          msg: 'Rating count must be greater than or equal to 0',
-        },
+      type: DataTypes.VIRTUAL,
+      async get() {
+        try {
+          const reviews = await this.getRatingReviews();
+          if (!reviews) return 0;
+          return reviews.length;
+        } catch (error) {
+          console.error(error);
+          console.log('Error getting rating count for product');
+        }
       },
     },
     imageUrl: {
@@ -120,6 +124,10 @@ const Product = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
+    getterMethods: {
+      totalRating() {},
+      ratingCount() {},
+    },
   }
 );
 
@@ -144,5 +152,7 @@ Product.belongsTo(
   { foreignKey: 'discountId' }
 );
 Discount.hasMany(Product, { foreignKey: 'discountId' });
+
+// Hooks
 
 module.exports = Product;
