@@ -2,12 +2,12 @@ module.exports = [
     {
         'id': 1,
         'totalPrice': 860,
-        'userId': 2
+        'userId': 1
     },
     {
         'id': 2,
         'totalPrice': 485,
-        'userId': 3
+        'userId': 2
     },
     // {
     //     'id': 3,
