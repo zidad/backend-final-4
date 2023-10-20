@@ -1,6 +1,7 @@
 const express = require('express');
 const process = require('process');
 const path = require('path');
+var cors = require('cors');
 const app = express();
 
 // Middleware Routes
@@ -21,6 +22,9 @@ const {
   discountRoutes,
   wishListRoutes,
 } = require('./routes');
+
+// CORS Middleware
+app.use(cors());
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
