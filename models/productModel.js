@@ -124,10 +124,6 @@ const Product = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
-    getterMethods: {
-      totalRating() {},
-      ratingCount() {},
-    },
   }
 );
 
