@@ -1,7 +1,7 @@
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
-const { Category, Product } = require('../models');
-const { Op } = require('sequelize');
+const { Category } = require('../models');
+const { ProductService } = require('../services');
 
 /**
  * Fetches all categories from the database.
@@ -40,35 +40,6 @@ const getCategories = asyncWrapper(async (req, res, next) => {
   });
 });
 
-// /**
-//  * Fetches a single category by ID from the database.
-//  * @param {Object} req - Express request object.
-//  * @param {Object} res - Express response object.
-//  * @param {function} next - Express next middleware function.
-//  */
-// const getCategory = asyncWrapper(async (req, res, next) => {
-//   // Extract category ID from request parameters
-//   const categoryId = Number(req.params.id);
-
-//   // Find the category by ID in the database
-//   const category = await Category.findByPk(categoryId);
-
-//   // If the category is not found, log and return a custom error
-//   if (!category) {
-//     console.log(`Category with ID ${categoryId} not found`);
-//     return next(createCustomError(`Category not found`, 404));
-//   }
-
-//   console.log(`Category with ID ${categoryId} successfully fetched`);
-
-//   // Send a success response with the fetched category
-//   res.status(200).json({
-//     success: true,
-//     message: `Category successfully fetched`,
-//     data: category,
-//   });
-// });
-
 /**
  * Fetches a single category by ID from the database along with its products
  * @param {Object} req - Express request object.
@@ -79,51 +50,21 @@ const getCategory = asyncWrapper(async (req, res, next) => {
   // Extract category ID from request parameters
   const id = Number(req.params.id);
 
-  // Extract the handpicked query parameters
-  const handpicked = req.query.handpicked
-    ? JSON.parse(req.query.handpicked)
-    : false;
-
   // Find the category by ID in the database
   const category = await Category.findByPk(id);
 
-  // Initializing the where clause
-  let whereClause = {
-    categoryId: id,
-  };
-  if (handpicked) {
-    whereClause.totalRating = { [Op.gte]: 4.5 };
-    whereClause.price = { [Op.lte]: 100 };
-  }
-
   console.log('Fetched Category: ', category?.name);
   if (category) {
-    const products = await Product.findAll({ where: whereClause });
-
-    // Fetch totalRating and ratingCount for each product concurrently
-    const fetchAttributesPromises = products.map(async (product) => {
-      const [totalRating, ratingCount] = await Promise.all([
-        product.get('totalRating'),
-        product.get('ratingCount'),
-      ]);
-
-      // Return a simplified product object
-      return {
-        ...product.dataValues,
-        totalRating,
-        ratingCount,
-      };
+    const { products } = await ProductService.fetchProductsWithCount({
+      where: { categoryId: id },
     });
 
-    // Wait for all promises to resolve
-    const productsWithReview = await Promise.all(fetchAttributesPromises);
-
-    console.log('Products: ', products?.name);
+    console.log('Fetched Products Successfully');
     // Send a response with category and associated products
     return res.status(200).json({
       success: true,
       message: `Category and products successfully fetched`,
-      data: { category, products: productsWithReview },
+      data: { category, products },
     });
   } else {
     // If the category is not found, invoke the next middleware with a custom error

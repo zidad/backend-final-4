@@ -1,4 +1,6 @@
-const { Product } = require('../models');
+const { Product, Category, Brand, Discount } = require('../models');
+const { development } = require('../config/config');
+const { Op } = require('sequelize');
 
 /**
  * Retrieve a product's rating summary, including the total rating and rating count.
@@ -9,7 +11,7 @@ const { Product } = require('../models');
 const getProductRatingSummary = async (product) => {
   const reviews = await product.getRatingReviews();
 
-  const totalRating = reviews
+  const rating = reviews
     ? (reviews
         .map((review) => review.rating)
         .reduce((acc, current) => acc + current, 0) /
@@ -17,7 +19,7 @@ const getProductRatingSummary = async (product) => {
         5) *
       5
     : 0;
-
+  const totalRating = Math.round(rating * 10) / 10;
   const ratingCount = reviews ? reviews.length : 0;
   return {
     totalRating,
@@ -59,13 +61,19 @@ const generateProductResponse = async (product) => {
  * @returns {Promise<{products: object[], count: number}>} An object containing an array of products and the total count.
  */
 const fetchProductsWithCount = async (options) => {
-  const products = await Product.findAll(options);
-  let count = 0;
+  const products = await Product.findAll({
+    ...options,
+    include: [
+      { model: Category, attributes: ['name'] },
+      { model: Brand, attributes: ['name'] },
+      { model: Discount, attributes: ['description', 'discountPercentage'] },
+    ],
+  });
+  const count = await Product.count({ where: options.where });
 
   // Transform the products data to include category name, brand name, and discount description/percentage
   const transformedProducts = products.map(async (product) => {
     // Get the totalRating and ratingCount
-    count++;
     return await generateProductResponse(product);
   });
 
@@ -91,7 +99,21 @@ const fetchProductById = async (id, options) => {
   return await generateProductResponse(product);
 };
 
+const fetchHandPickedProducts = async (options) => {
+  const products = await fetchProductsWithCount({
+    ...options,
+    where: { [Op.lte]: development.handPickedPrice },
+  });
+
+  const handPickedProducts = products.filter(
+    (product) => product.totalRating >= 4.5
+  );
+
+  return handPickedProducts;
+};
+
 module.exports = {
   fetchProductsWithCount,
   fetchProductById,
+  fetchHandPickedProducts,
 };
