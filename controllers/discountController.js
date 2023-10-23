@@ -1,7 +1,7 @@
 const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const Discount = require('../models/discountModel');
-const { Product } = require('../models');
+const { ProductService } = require('../services');
 
 /**
  * Fetches all discounts from the database.
@@ -46,7 +46,7 @@ const getDiscount = asyncWrapper(async (req, res, next) => {
   console.log(`Discount with ID ${discountId} successfully fetched`);
 
   // If the discount is found, fetch all products associated with the discount
-  const products = await Product.findAll({
+  const { products } = await ProductService.fetchProductsWithCount({
     where: { discountId: discountId },
   });
 

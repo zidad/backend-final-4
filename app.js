@@ -1,12 +1,13 @@
 const express = require('express');
 const process = require('process');
+const path = require('path');
+var cors = require('cors');
 const app = express();
 
 // Middleware Routes
 const { notFound, errorHandler } = require('./middleware');
 const register = require('./utils/api/register');
 const login = require('./utils/api/login');
-
 
 const {
   addressRoutes,
@@ -19,8 +20,11 @@ const {
   categoryRoutes,
   brandRoutes,
   discountRoutes,
-  wishListRoutes
+  wishListRoutes,
 } = require('./routes');
+
+// CORS Middleware
+app.use(cors());
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
@@ -41,6 +45,8 @@ app.use('/api/brands', brandRoutes);
 app.use('/api/discounts', discountRoutes);
 app.use('/api/wishlists', wishListRoutes);
 
+// eslint-disable-next-line no-undef
+app.use('/static', express.static(path.join(__dirname, 'public')));
 
 app.use(notFound);
 app.use(errorHandler);
