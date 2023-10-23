@@ -10,6 +10,7 @@ const { asyncWrapper } = require('../middleware');
 const { createCustomError } = require('../utils/errors/custom-error');
 const { Op } = require('sequelize');
 const { development } = require('../config/config');
+const { ProductService } = require('../services');
 
 /**
  * Creates a new product in the database.
@@ -101,33 +102,23 @@ const getProducts = asyncWrapper(async (req, res) => {
       [Op.gte]: nthMonthAgo,
     };
   }
+
   if (handpicked) {
-    whereClause.totalRating = { [Op.gte]: development.handPickedRating };
     whereClause.price = { [Op.lte]: development.handPickedPrice };
+    // whereClause.totalRating = { [Op.gte]: development.handPickedRating };
   }
 
   // Fetch all products from the database
-  const products = await Product.findAll({
+  const { count, products } = await ProductService.fetchProductsWithCount({
     where: whereClause,
     limit: itemsPerPage,
     offset: offset,
-    include: [
-      { model: Category, attributes: ['name'] },
-      { model: Brand, attributes: ['name'] },
-      { model: Discount, attributes: ['description', 'discountPercentage'] },
-    ],
   });
 
-  // Fetching the number of products and pages to return in the response
-  // Fetching the number of products that match the filter criteria
-  const filteredProductsCount = await Product.count({
-    where: whereClause, // Apply the same conditions
-  });
-
-  const filteredTotalPages = Math.ceil(filteredProductsCount / itemsPerPage);
+  const totalPages = Math.ceil(count / itemsPerPage);
 
   // Check if the requested page exceeds the total number of pages
-  if (page > filteredTotalPages) {
+  if (page > totalPages) {
     // Respond with an error indicating that the page does not exist
     return res.status(404).json({
       success: false,
@@ -135,71 +126,50 @@ const getProducts = asyncWrapper(async (req, res) => {
     });
   }
 
-  // Transform the products data to include category name, brand name, and discount description/percentage
-  const transformedProducts = products.map(async (product) => {
-    // Get the totalRating and ratingCount
-    const totalRating = await product.totalRating;
-    const ratingCount = await product.ratingCount;
-    return {
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      availableInStock: product.availableInStock,
-      imageUrl: product.imageUrl,
-      category: product.category.name, // Access the category name
-      brand: product.brand.name, // Access the brand name
-      totalRating,
-      ratingCount,
-      discount: {
-        description: product.discount.description, // Access the discount description
-        percentage: product.discount.discountPercentage, // Access the discount percentage
-      },
-    };
-  });
-
-  // Wait for all promises to resolve
-  const responseData = await Promise.all(transformedProducts);
-
   // Log the successful retrieval and send a response with the products
   console.log('Products are fetched');
-  res.status(200).json({
+
+  if (handpicked) {
+    const handpickedProducts = products.filter(
+      (product) => product.totalRating >= 4.5
+    );
+    const handpickedCount = handpickedProducts.length;
+    const totalPages = Math.ceil(handpickedCount / itemsPerPage);
+
+    // Check if the requested page exceeds the total number of pages
+    if (page > totalPages) {
+      // Respond with an error indicating that the page does not exist
+      return res.status(404).json({
+        success: false,
+        message: 'Page not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Products fetched successfully',
+      pagination: {
+        currentPage: page,
+        itemsPerPage: itemsPerPage,
+        totalProducts: handpickedCount, // Update to use filtered count
+        totalPages: totalPages, // Update to use filtered count
+      },
+      data: handpickedProducts,
+    });
+  }
+
+  return res.status(200).json({
     success: true,
     message: 'Products fetched successfully',
     pagination: {
       currentPage: page,
       itemsPerPage: itemsPerPage,
-      totalProducts: filteredProductsCount, // Update to use filtered count
-      totalPages: filteredTotalPages, // Update to use filtered count
+      totalProducts: count, // Update to use filtered count
+      totalPages: totalPages, // Update to use filtered count
     },
-    data: responseData,
+    data: products,
   });
 });
-
-// /**
-//  * Retrieves a single product by ID from the database.
-//  * @param {Object} req - Express request object.
-//  * @param {Object} res - Express response object.
-//  * @param {function} next - Express next middleware function.
-//  */
-// const getProduct = asyncWrapper(async (req, res, next) => {
-//   // Extract product ID from request parameters
-//   const id = Number(req.params.id);
-
-//   // Find the product by ID in the database
-//   const product = await Product.findByPk(id);
-
-//   // If the product is found, send a success response; otherwise, invoke the next middleware with a custom error
-//   if (product) {
-//     return res.status(200).json({
-//       success: true,
-//       message: 'Product fetched successfully',
-//       data: product,
-//     });
-//   } else {
-//     return next(createCustomError(`No product with id: ${id} is found`, 404));
-//   }
-// });
 
 /**
  * Retrieves a single product by ID from the database along with its ratingReviews.
@@ -211,14 +181,21 @@ const getProduct = asyncWrapper(async (req, res, next) => {
   // Extract product ID from request parameters
   const id = Number(req.params.id);
 
-  // Find the product by ID in the database
-  const product = await Product.findByPk(id, {
+  const product = await ProductService.fetchProductById(id, {
     include: [
       { model: Discount, attributes: ['description', 'discountPercentage'] },
       { model: Category, attributes: ['name'] },
       { model: Brand, attributes: ['name'] },
     ],
   });
+  // Find the product by ID in the database
+  // const product = await Product.findByPk(id, {
+  //   include: [
+  //     { model: Discount, attributes: ["description", "discountPercentage"] },
+  //     { model: Category, attributes: ["name"] },
+  //     { model: Brand, attributes: ["name"] },
+  //   ],
+  // });
 
   // If the product is found, fetch all ratingReviews associated with the product
   if (product) {
@@ -226,32 +203,12 @@ const getProduct = asyncWrapper(async (req, res, next) => {
       where: { productId: id },
     });
 
-    const totalRating = await product.totalRating;
-    const ratingCount = await product.ratingCount;
-
-    const responseData = {
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      availableInStock: product.availableInStock,
-      totalRating,
-      ratingCount,
-      imageUrl: product.imageUrl,
-      category: product.category.name,
-      brand: product.brand.name,
-      discount: {
-        description: product.discount.description,
-        percentage: product.discount.discountPercentage,
-      },
-    };
-
     // Send a response with product and associated ratingReviews
     return res.status(200).json({
       success: true,
       message: 'Product and RatingReviews fetched successfully',
       data: {
-        product: responseData,
+        product: product,
         ratingReviews,
       },
     });
