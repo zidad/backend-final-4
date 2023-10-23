@@ -1,14 +1,31 @@
-version: '3'
+version: '3.8'
 
 services:
   # MySQL database service
   db:
     image: mysql:latest
     ports:
-      - "3307:3306"
+      - "3306:3306"
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
       - MYSQL_DATABASE=finalproject4db
+    networks:
+      - backend-final
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 40s
+      retries: 10
+      interval: 5s
+
+  # phpMyAdmin service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=
+    ports:
+      - "8080:80"
     networks:
       - backend-final
 
@@ -26,8 +43,9 @@ services:
       - backend-final
     depends_on:
       - db
+      - phpmyadmin
+    command: sh -c 'sleep 40 && npm start'
 
 networks:
   backend-final:
     driver: bridge
-    
