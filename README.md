@@ -167,3 +167,10 @@ Contributions to this project are welcome! If you'd like to contribute, please f
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+
+Todo:
+- Split up docker-compose.yaml into 2 files, one for dependencies and one for the app (or only 1 file if you only want only dependencies)
+- Add component tests (using jest?) calling API's
+- Add github pipeline to build and deploy the image
+- Add automated tests to the pipeline (spin up docker-compose with or without the app)
