@@ -3,6 +3,7 @@ version: '3.8'
 services:
   # MySQL database service
   db:
+    hostname: db
     image: mysql:latest
     ports:
       - "3306:3306"
@@ -12,13 +13,14 @@ services:
     networks:
       - backend-final
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "phpmyadmin" ]
       timeout: 40s
       retries: 10
       interval: 5s
 
   # phpMyAdmin service
   phpmyadmin:
+    hostname: phpmyadmin
     image: phpmyadmin/phpmyadmin
     environment:
       - PMA_HOST=db
@@ -28,6 +30,8 @@ services:
       - "8080:80"
     networks:
       - backend-final
+    links:
+      - db
 
   # Node.js application service
   app:
@@ -45,6 +49,8 @@ services:
       - db
       - phpmyadmin
     command: sh -c 'sleep 40 && npm start'
+    links:
+      - db
 
 networks:
   backend-final:
